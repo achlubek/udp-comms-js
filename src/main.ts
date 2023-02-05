@@ -3,7 +3,6 @@ import "./util/ts-paths-register";
 
 import { CommandBus } from "@app/bus/CommandBus";
 import { EventBus } from "@app/bus/EventBus";
-import { RequestServiceDescriptorCommand } from "@app/commands/RequestServiceDescriptorCommand";
 import { Configuration } from "@app/configuration/Configuration";
 import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
@@ -42,9 +41,9 @@ const runtime = new ServiceRuntime(
 
 void (async () => {
   await runtime.start();
-  const result = await runtime.executeCommand(
-    new RequestServiceDescriptorCommand()
-  );
-  logger.debug("test", JSON.stringify(result, undefined, 4));
+  // const result = await runtime.executeCommand(
+  //   new RequestServiceDescriptorCommand()
+  // );
+  // logger.debug("test", JSON.stringify(result, undefined, 4));
   await runtime.publishEvent(new RequestServiceDescriptorsEvent());
 })();

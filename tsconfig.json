@@ -11,7 +11,7 @@
     "experimentalDecorators": false,
     "allowSyntheticDefaultImports": false,
     "allowJs": false,
-    "incremental": true,
+    "incremental": false,
     "sourceMap": false,
     "esModuleInterop": false,
     "noImplicitAny": false,

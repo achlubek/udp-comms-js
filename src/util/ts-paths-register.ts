@@ -15,5 +15,6 @@ tsConfigPaths.register({
   baseUrl,
   paths: {
     "@app/*": [`./${runningInTsNode ? "src" : "dist"}/*`],
+    "@test/*": ["./test/*"],
   },
 });

@@ -11,7 +11,7 @@
     "style:fix": "yarn prettier:fix && yarn lint:fix",
     "test": "mocha --config .mocharc.json",
     "test:coverage": "nyc --reporter=html yarn mocha",
-    "build": "tsc -P tsconfig.json",
+    "build": "yarn rimraf dist && tsc -P tsconfig.build.json",
     "start:dev": "ts-node -r dotenv/config src/main.ts",
     "start:dist": "node dist/main.ts"
   },
@@ -37,6 +37,7 @@
     "mocha": "10.*",
     "nyc": "15.*",
     "prettier": "2.*",
+    "rimraf": "^4.1.2",
     "sinon": "15.*",
     "ts-node": "10.*",
     "typescript": "4.*"

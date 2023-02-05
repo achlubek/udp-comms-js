@@ -142,37 +142,66 @@ export class ServiceRuntime implements ServiceRuntimeInterface {
   }
 
   public async executeCommand<Payload, Returns>(
+    host: string,
     command: CommandInterface<Payload>
   ): Promise<Returns> {
     this.logger.info(this, `Executing command ${command.commandName}`);
     const id = crypto.randomUUID();
-    this.logger.debug(this, `Assigned command id ${id}`);
-    const ackPromise = new Promise<void>((resolve, reject) => {
-      this.waitingAckPromises[id] = resolve;
-      setTimeout(
-        () => reject("acknowledge timeout"),
-        this.timeouts.acknowledgeTimeout
+    try {
+      this.logger.debug(this, `Assigned command id ${id}`);
+      const ackPromise = new Promise<void>((resolve, reject) => {
+        this.waitingAckPromises[id] = resolve;
+        setTimeout(
+          () => reject("acknowledge timeout"),
+          this.timeouts.acknowledgeTimeout
+        );
+      });
+
+      const resultPromise = new Promise<Returns>((resolve, reject) => {
+        this.waitingResultPromises[id] = resolve;
+        setTimeout(
+          () => reject("execute timeout"),
+          this.timeouts.executeTimeout
+        );
+      });
+
+      this.logger.debug(this, `Sending command ${command.commandName}`);
+      await this.udpComms.send(
+        host,
+        this.signalEncoder.encodeCommand(
+          id,
+          command.commandName,
+          command.commandPayload
+        )
       );
-    });
+      this.logger.debug(
+        this,
+        `Waiting for acknowledgement for command id ${id}`
+      );
+      await ackPromise;
+      this.logger.debug(this, `Waiting for result for command id ${id}`);
+      return await resultPromise;
+    } finally {
+      if (this.waitingAckPromises[id]) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete this.waitingAckPromises[id];
+      }
+      if (this.waitingAckPromises[id]) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete this.waitingResultPromises[id];
+      }
+    }
+  }
 
-    const resultPromise = new Promise<Returns>((resolve, reject) => {
-      this.waitingResultPromises[id] = resolve;
-      setTimeout(() => reject("execute timeout"), this.timeouts.executeTimeout);
-    });
-
-    this.logger.debug(this, `Broadcasting command ${command.commandName}`);
-    await this.udpComms.broadcast(
-      this.signalEncoder.encodeCommand(
-        id,
-        command.commandName,
-        command.commandPayload
-      )
+  public async executeMultiCommand<Payload, Returns>(
+    hosts: string[],
+    command: CommandInterface<Payload>
+  ): Promise<PromiseSettledResult<Awaited<Returns>>[]> {
+    this.logger.info(this, `Executing multi command ${command.commandName}`);
+    const promises = hosts.map((host) =>
+      this.executeCommand<Payload, Returns>(host, command)
     );
-
-    this.logger.debug(this, `Waiting for acknowledgement for command id ${id}`);
-    await ackPromise;
-    this.logger.debug(this, `Waiting for result for command id ${id}`);
-    return resultPromise;
+    return await Promise.allSettled(promises);
   }
 
   public async publishEvent<T>(event: EventInterface<T>): Promise<void> {

@@ -11,8 +11,14 @@ export interface ServiceRuntimeInterface {
   getName(): string;
 
   executeCommand<Payload, Returns>(
+    host: string,
     command: CommandInterface<Payload>
   ): Promise<Returns>;
+
+  executeMultiCommand<Payload, Returns>(
+    hosts: string[],
+    command: CommandInterface<Payload>
+  ): Promise<PromiseSettledResult<Awaited<Returns>>[]>;
 
   publishEvent<T>(event: EventInterface<T>): Promise<void>;
 
@@ -23,4 +29,8 @@ export interface ServiceRuntimeInterface {
   unregisterCommandHandler(commandName: string): void;
 
   registerEventHandler(handler: EventHandlerInterface<unknown>): string;
+
+  unregisterEventHandlers(eventName: string): void;
+
+  unregisterEventHandler(subscriptionId: string): void;
 }
