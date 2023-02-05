@@ -1,6 +1,6 @@
 import * as Joi from "joi";
 
-import { ConfigurationInterface } from "@app/ConfigurationInterface";
+import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { LogLevel, availableLogLevels } from "@app/logger/LoggerInterface";
 
 /* eslint-disable @typescript-eslint/naming-convention */

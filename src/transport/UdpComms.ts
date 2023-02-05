@@ -1,8 +1,8 @@
 import * as dgram from "dgram";
 
-import { UdpCommsInterface } from "@app/UdpCommsInterface";
 import { Logger } from "@app/logger/Logger";
 import { LoggerInterface } from "@app/logger/LoggerInterface";
+import { UdpCommsInterface } from "@app/transport/UdpCommsInterface";
 
 export type OnReceive = (
   from: string,

@@ -3,7 +3,7 @@ import { unzipSync } from "zlib";
 import {
   DecodedSignal,
   SignalDecoderInterface,
-} from "@app/SignalDecoderInterface";
+} from "@app/transport/SignalDecoderInterface";
 
 export class SignalDecoder implements SignalDecoderInterface {
   public decode(data: ArrayBuffer): DecodedSignal {

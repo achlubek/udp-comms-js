@@ -1,7 +1,7 @@
 import * as crypto from "crypto";
 import { deflateSync } from "zlib";
 
-import { SignalEncoderInterface } from "@app/SignalEncoderInterface";
+import { SignalEncoderInterface } from "@app/transport/SignalEncoderInterface";
 
 export class SignalEncoder implements SignalEncoderInterface {
   public encodeEvent<T>(name: string, payload: T): ArrayBuffer {

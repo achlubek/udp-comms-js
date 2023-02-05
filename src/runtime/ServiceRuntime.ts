@@ -1,14 +1,5 @@
 import * as crypto from "crypto";
 
-import {
-  DecodedCommand,
-  DecodedCommandAcknowledge,
-  DecodedCommandResult,
-  DecodedEvent,
-  SignalDecoderInterface,
-} from "@app/SignalDecoderInterface";
-import { SignalEncoderInterface } from "@app/SignalEncoderInterface";
-import { UdpCommsInterface } from "@app/UdpCommsInterface";
 import { CommandBusInterface } from "@app/bus/CommandBusInterface";
 import { EventBusInterface } from "@app/bus/EventBusInterface";
 import { RequestServiceDescriptorCommandHandler } from "@app/command-handlers/RequestServiceDescriptorCommandHandler";
@@ -31,6 +22,15 @@ import { CommandInterface } from "@app/runtime/CommandInterface";
 import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
 import { EventInterface } from "@app/runtime/EventInterface";
 import { ServiceRuntimeInterface } from "@app/runtime/ServiceRuntimeInterface";
+import {
+  DecodedCommand,
+  DecodedCommandAcknowledge,
+  DecodedCommandResult,
+  DecodedEvent,
+  SignalDecoderInterface,
+} from "@app/transport/SignalDecoderInterface";
+import { SignalEncoderInterface } from "@app/transport/SignalEncoderInterface";
+import { UdpCommsInterface } from "@app/transport/UdpCommsInterface";
 
 // eslint-disable-next-line
 // @ts-ignore

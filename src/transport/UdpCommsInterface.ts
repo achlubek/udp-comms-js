@@ -1,4 +1,4 @@
-import { OnReceive } from "@app/UdpComms";
+import { OnReceive } from "@app/transport/UdpComms";
 
 export interface UdpCommsInterface {
   send(remoteAddress: string, data: ArrayBuffer): Promise<void>;
