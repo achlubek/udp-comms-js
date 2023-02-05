@@ -9,8 +9,8 @@
     "prettier": "prettier --check \"**/*.((j|t)s|json|yml|yaml)\" --ignore-path .gitignore",
     "prettier:fix": "prettier --write \"**/*.((j|t)s|json|yml|yaml)\" --ignore-path .gitignore",
     "style:fix": "yarn prettier:fix && yarn lint:fix",
-    "build:ts": "tsc -P tsconfig.json",
-    "teapot": "ts-node src/teapot.ts"
+    "build": "tsc -P tsconfig.json",
+    "start": "ts-node src/main.ts"
   },
   "dependencies": {
     "@types/node": "^18.11.18",

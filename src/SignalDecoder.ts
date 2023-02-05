@@ -5,9 +5,9 @@ type JSONValue =
   | number
   | boolean
   | { [x: string]: JSONValue }
-  | Array<JSONValue>;
+  | JSONValue[];
 
-type JSONObject = { [x: string]: JSONValue };
+type JSONObject = Record<string, JSONValue>;
 
 export interface DecodedEvent {
   dateType: "event";

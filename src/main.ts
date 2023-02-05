@@ -7,16 +7,10 @@ import { SignalEncoder } from "@app/SignalEncoder";
 import { UdpComms } from "@app/UdpComms";
 import { CommandBus } from "@app/bus/CommandBus";
 import { EventBus } from "@app/bus/EventBus";
-import { CommandHandlerInterface } from "@app/commands/CommandHandlerInterface";
-import { CommandInterface } from "@app/commands/CommandInterface";
-import {
-  TestReversePayloadCommand,
-  testReversePayloadCommandName,
-} from "@app/commands/TestReversePayloadCommand";
+import { testReversePayloadCommandName } from "@app/commands/TestReversePayloadCommand";
 import { TestReversePayloadCommandHandler } from "@app/commands/TestReversePayloadCommandHandler";
+import { NodeInitializedEventHandler } from "@app/events/NodeInitializedEventHandler";
 import { Level, Logger } from "@app/logger/Logger";
-import { ConstructorOf } from "@app/util/ConstructorOf";
-import { getStatic } from "@app/util/getStatic";
 
 const logger = new Logger(
   (process.env.LOG_LEVEL as Level | undefined) ?? "trace"
@@ -36,25 +30,13 @@ const runtime = new Runtime(
   eventBus
 );
 
-const register = <Command extends CommandInterface<unknown>>(
-  commandClass: ConstructorOf<Command>,
-  handler: CommandHandlerInterface<Command["payload"], Command["payload"]>
-): void => {
-  const commandName = getStatic(commandClass, "name");
-  commandBus.register(commandName, handler.handle.bind(handler));
-  logger.info("main", `Registered handler for command ${commandName}`);
-};
+runtime.registerCommandHandler(new TestReversePayloadCommandHandler());
+runtime.registerEventHandler(new NodeInitializedEventHandler(logger));
 
 void (async () => {
   await runtime.start();
-  register(TestReversePayloadCommand, new TestReversePayloadCommandHandler());
-  const result = await runtime.executeCommand<
-    TestReversePayloadCommand["payload"],
-    TestReversePayloadCommand["payload"]
-  >(testReversePayloadCommandName, { testValue: "Abcdef123!" });
+  const result = await runtime.executeCommand(testReversePayloadCommandName, {
+    testValue: "Abcdef123!",
+  });
   logger.debug("test", JSON.stringify(result, undefined, 4));
 })();
-//
-// (function wait() {
-//   if (runtime) setTimeout(wait, 1000);
-// })();

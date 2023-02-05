@@ -7,7 +7,10 @@ export type OnReceive = (
   data: ArrayBuffer
 ) => void | Promise<void>;
 
-export type Address = { host: string; port: number };
+export interface Address {
+  host: string;
+  port: number;
+}
 type OnMessageHandler = (from: Address, data: ArrayBuffer) => void;
 
 function send(logger: Logger, to: Address, data: ArrayBuffer): Promise<number> {

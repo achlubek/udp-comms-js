@@ -5,6 +5,10 @@ import { SignalEncoder } from "@app/SignalEncoder";
 import { UdpComms } from "@app/UdpComms";
 import { CommandBus } from "@app/bus/CommandBus";
 import { EventBus } from "@app/bus/EventBus";
+import { CommandHandlerInterface } from "@app/commands/CommandHandlerInterface";
+import { EventHandlerInterface } from "@app/events/EventHandlerInterface";
+import { EventInterface } from "@app/events/EventInterface";
+import { NodeInitializedEvent } from "@app/events/NodeInitializedEvent";
 import { Logger } from "@app/logger/Logger";
 
 // eslint-disable-next-line
@@ -57,10 +61,7 @@ export class Runtime {
             from,
             this.signalEncoder.encodeCommandAcknowledge(id)
           );
-          const result = this.commandBus.execute(
-            decoded.name,
-            decoded.payload
-          ) as unknown | Promise<unknown>;
+          const result = this.commandBus.execute(decoded.name, decoded.payload);
           await this.udpComms.send(
             from,
             this.signalEncoder.encodeCommandResult(
@@ -82,6 +83,7 @@ export class Runtime {
             `Received acknowledgement for command id ${id}`
           );
           promise();
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete this.waitingAckPromises[id];
         } else {
           this.logger.error(
@@ -97,6 +99,7 @@ export class Runtime {
         if (promise) {
           this.logger.debug(this, `Received result for command id ${id}`);
           promise(decoded.payload);
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete this.waitingResultPromises[id];
         } else {
           this.logger.error(
@@ -106,6 +109,7 @@ export class Runtime {
         }
       }
     });
+    await this.dispatchEvent(new NodeInitializedEvent());
   }
 
   public async executeCommand<Payload, Returns>(
@@ -136,10 +140,36 @@ export class Runtime {
     return resultPromise;
   }
 
-  public async dispatchEvent<T>(name: string, payload: T): Promise<void> {
-    this.logger.info(this, `Dispatching event ${name}`);
+  public async dispatchEvent<T>(event: EventInterface<T>): Promise<void> {
+    this.logger.info(this, `Dispatching event ${event.name}`);
     await this.udpComms.broadcast(
-      this.signalEncoder.encodeEvent(name, payload)
+      this.signalEncoder.encodeEvent(event.name, event.payload)
     );
+  }
+
+  public registerCommandHandler(
+    handler: CommandHandlerInterface<unknown, unknown>
+  ): void {
+    const commandName = handler.getHandledCommandName();
+    if (this.commandBus.hasHandler(commandName)) {
+      throw new Error(`Handler for command ${commandName} already registered`);
+    }
+    this.commandBus.register(commandName, handler.handle.bind(handler));
+    this.logger.info("main", `Registered handler for command ${commandName}`);
+  }
+
+  public unregisterCommandHandler(commandName: string): void {
+    this.commandBus.unregister(commandName);
+    this.logger.info("main", `Unregistered handler for command ${commandName}`);
+  }
+
+  public registerEventHandler(handler: EventHandlerInterface<unknown>): string {
+    const eventName = handler.getHandledEventName();
+    const subscriptionId = this.eventBus.subscribe(
+      eventName,
+      handler.handle.bind(handler)
+    );
+    this.logger.info("main", `Registered handler for event ${eventName}`);
+    return subscriptionId;
   }
 }

@@ -5,7 +5,6 @@ let runningInTsNode = false;
 // prettier-ignore
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 if (process[Symbol.for("ts-node.register.instance")]) {
   runningInTsNode = true;
 }

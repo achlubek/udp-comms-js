@@ -26,17 +26,17 @@ export const prettyPrint = (source: any, message: string): string => {
   if (typeof source !== "string") {
     let found = false;
     try {
-      if (casted && casted["name"]) {
-        src = casted["name"];
+      if (casted.name) {
+        src = casted.name;
         found = true;
       }
     } catch (e) {
       //
     }
     try {
-      if (!found && source && casted["constructor"]) {
-        if (casted["constructor"]["name"]) {
-          src = casted["constructor"]["name"];
+      if (!found && source && casted.constructor) {
+        if (casted.constructor.name) {
+          src = casted.constructor.name;
         }
       }
     } catch (e) {

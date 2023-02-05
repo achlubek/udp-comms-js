@@ -1,19 +1,15 @@
-// eslint-disable-next-line
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Any = any;
-type CommandHandlerAnyType = (payload: Any) => Any;
+type CommandHandler = (payload: unknown) => unknown;
 
 export class CommandBus {
-  private handlers: Record<string, CommandHandlerAnyType | undefined> = {};
-  public register(commandName: string, handler: CommandHandlerAnyType): void {
+  private handlers: Record<string, CommandHandler | undefined> = {};
+  public register(commandName: string, handler: CommandHandler): void {
     if (this.handlers[commandName]) {
       throw new Error("handler already registered");
     }
     this.handlers[commandName] = handler;
   }
 
-  public unsubscribe(commandName: string): void {
+  public unregister(commandName: string): void {
     this.handlers[commandName] = undefined;
   }
 
@@ -21,7 +17,7 @@ export class CommandBus {
     return !!this.handlers[commandName];
   }
 
-  public execute(commandName: string, payload: Any): Any {
+  public execute(commandName: string, payload: unknown): unknown {
     const handler = this.handlers[commandName];
     if (!handler) {
       throw new Error("handler not registered");

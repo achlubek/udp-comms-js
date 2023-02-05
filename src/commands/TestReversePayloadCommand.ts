@@ -1,6 +1,8 @@
 import { CommandInterface } from "@app/commands/CommandInterface";
 
-export type TestReversePayload = { testValue: string };
+export interface TestReversePayload {
+  testValue: string;
+}
 export const testReversePayloadCommandName = "get-machine-name";
 export class TestReversePayloadCommand
   implements CommandInterface<TestReversePayload>
