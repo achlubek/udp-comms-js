@@ -44,6 +44,10 @@ export class Runtime {
   public async start(): Promise<void> {
     await this.udpComms.listen(async (from, data) => {
       const decoded = this.signalDecoder.decode(data);
+      this.logger.debug(
+        this,
+        `Decoded signal from ${from}: ${JSON.stringify(decoded, undefined, 4)}`
+      );
 
       if (decoded.dateType === "event") {
         this.logger.debug(this, `Received event ${decoded.name}`);
@@ -109,7 +113,7 @@ export class Runtime {
         }
       }
     });
-    await this.dispatchEvent(new NodeInitializedEvent());
+    await this.publishEvent(new NodeInitializedEvent());
   }
 
   public async executeCommand<Payload, Returns>(
@@ -140,7 +144,7 @@ export class Runtime {
     return resultPromise;
   }
 
-  public async dispatchEvent<T>(event: EventInterface<T>): Promise<void> {
+  public async publishEvent<T>(event: EventInterface<T>): Promise<void> {
     this.logger.info(this, `Dispatching event ${event.name}`);
     await this.udpComms.broadcast(
       this.signalEncoder.encodeEvent(event.name, event.payload)

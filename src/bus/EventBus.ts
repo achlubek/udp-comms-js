@@ -18,6 +18,10 @@ export class EventBus {
     return id;
   }
 
+  public getHandledEvents(): string[] {
+    return this.subscriptions.map((s) => s.eventName);
+  }
+
   public unsubscribeBySubscriptionId(id: string): void {
     this.subscriptions = this.subscriptions.filter((s) => s.id !== id);
   }

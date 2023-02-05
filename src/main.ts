@@ -1,6 +1,7 @@
 // eslint-disable-next-line
 import "./register";
 
+import { getEnvironment } from "@app/Env";
 import { Runtime } from "@app/Runtime";
 import { SignalDecoder } from "@app/SignalDecoder";
 import { SignalEncoder } from "@app/SignalEncoder";
@@ -10,13 +11,15 @@ import { EventBus } from "@app/bus/EventBus";
 import { testReversePayloadCommandName } from "@app/commands/TestReversePayloadCommand";
 import { TestReversePayloadCommandHandler } from "@app/commands/TestReversePayloadCommandHandler";
 import { NodeInitializedEventHandler } from "@app/events/NodeInitializedEventHandler";
-import { Level, Logger } from "@app/logger/Logger";
+import { RequestServiceDescriptorsEventHandler } from "@app/events/RequestServiceDescriptorsEventHandler";
+import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
+import { Logger } from "@app/logger/Logger";
 
-const logger = new Logger(
-  (process.env.LOG_LEVEL as Level | undefined) ?? "trace"
-);
+const env = getEnvironment();
 
-const udpComms = new UdpComms(logger, "192.168.1.255", 7777);
+const logger = new Logger(env.LOG_LEVEL);
+
+const udpComms = new UdpComms(logger, env.BROADCAST_ADDRESS, env.PORT);
 const encoder = new SignalEncoder();
 const decoder = new SignalDecoder();
 const commandBus = new CommandBus();
@@ -32,6 +35,9 @@ const runtime = new Runtime(
 
 runtime.registerCommandHandler(new TestReversePayloadCommandHandler());
 runtime.registerEventHandler(new NodeInitializedEventHandler(logger));
+runtime.registerEventHandler(
+  new RequestServiceDescriptorsEventHandler(runtime, commandBus, eventBus)
+);
 
 void (async () => {
   await runtime.start();
@@ -39,4 +45,5 @@ void (async () => {
     testValue: "Abcdef123!",
   });
   logger.debug("test", JSON.stringify(result, undefined, 4));
+  await runtime.publishEvent(new RequestServiceDescriptorsEvent());
 })();

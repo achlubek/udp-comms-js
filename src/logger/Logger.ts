@@ -4,7 +4,15 @@ import { prettyPrint } from "@app/logger/prettyPrint";
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Source = any;
-export type Level = "none" | "error" | "warn" | "info" | "debug" | "trace";
+export const availableLogLevels = [
+  "none",
+  "error",
+  "warn",
+  "info",
+  "debug",
+  "trace",
+] as const;
+export type Level = (typeof availableLogLevels)[number];
 
 export class Logger {
   private effectiveLogLevels: string[];

@@ -9,6 +9,10 @@ export class CommandBus {
     this.handlers[commandName] = handler;
   }
 
+  public getHandledCommands(): string[] {
+    return Object.keys(this.handlers);
+  }
+
   public unregister(commandName: string): void {
     this.handlers[commandName] = undefined;
   }
