@@ -9,25 +9,34 @@
     "prettier": "prettier --check \"**/*.((j|t)s|json|yml|yaml)\" --ignore-path .gitignore",
     "prettier:fix": "prettier --write \"**/*.((j|t)s|json|yml|yaml)\" --ignore-path .gitignore",
     "style:fix": "yarn prettier:fix && yarn lint:fix",
+    "test": "mocha --config .mocharc.json",
+    "test:coverage": "nyc --reporter=html yarn mocha",
     "build": "tsc -P tsconfig.json",
     "start": "ts-node src/main.ts"
   },
   "dependencies": {
-    "@types/node": "^18.11.18",
-    "cross-env": "^7.0.3",
-    "joi": "^17.7.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.1",
-    "typescript": "^4.9.4"
+    "joi": "17.*",
+    "tsconfig-paths": "4.*"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "5.48.1",
-    "@typescript-eslint/parser": "5.48.1",
-    "eslint": "8.31.0",
+    "@trivago/prettier-plugin-sort-imports": "4.*",
+    "@types/chai": "4.*",
+    "@types/mocha": "10.*",
+    "@types/node": "18.*",
+    "@types/sinon": "10.*",
+    "@typescript-eslint/eslint-plugin": "5.*",
+    "@typescript-eslint/parser": "5.*",
+    "chai": "4.*",
+    "cross-env": "7.*",
+    "eslint": "8.*",
     "eslint-config-prettier": "8.*",
     "eslint-plugin-import": "2.*",
-    "eslint-plugin-prettier": "4.2.1",
-    "prettier": "^2.8.1"
+    "eslint-plugin-prettier": "4.*",
+    "mocha": "10.*",
+    "nyc": "15.*",
+    "prettier": "2.*",
+    "sinon": "15.*",
+    "ts-node": "10.*",
+    "typescript": "4.*"
   }
 }
