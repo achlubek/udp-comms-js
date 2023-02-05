@@ -83,7 +83,7 @@ export class UdpComms implements UdpCommsInterface {
   ) {}
 
   public async send(remoteAddress: string, data: ArrayBuffer): Promise<void> {
-    if (this.socket) {
+    if (this.socket !== null) {
       await send(
         this.logger,
         this.socket,
@@ -96,7 +96,7 @@ export class UdpComms implements UdpCommsInterface {
   }
 
   public async broadcast(data: ArrayBuffer): Promise<void> {
-    if (this.socket) {
+    if (this.socket !== null) {
       await send(
         this.logger,
         this.socket,
@@ -114,5 +114,21 @@ export class UdpComms implements UdpCommsInterface {
       this.port,
       (from, data) => void onReceive(from.host, data)
     );
+  }
+
+  public async close(): Promise<void> {
+    if (this.socket === null) {
+      throw new NotConnectedException("Not connected");
+    }
+    return new Promise<void>((resolve) => {
+      this.socket?.close(() => {
+        this.socket = null;
+        resolve();
+      });
+    });
+  }
+
+  public isListening(): boolean {
+    return this.socket !== null;
   }
 }

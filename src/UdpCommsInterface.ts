@@ -6,4 +6,8 @@ export interface UdpCommsInterface {
   broadcast(data: ArrayBuffer): Promise<void>;
 
   listen(onReceive: OnReceive): Promise<void>;
+
+  close(): Promise<void>;
+
+  isListening(): boolean;
 }

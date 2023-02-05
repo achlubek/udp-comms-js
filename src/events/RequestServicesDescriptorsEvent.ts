@@ -1,8 +1,9 @@
-import { EventInterface } from "@app/events/EventInterface";
+import { EventInterface } from "@app/runtime/EventInterface";
 
-export const requestServiceDescriptorsEventName = "request-service-descriptors";
+export const requestServiceDescriptorsEventName =
+  "runtime/request-service-descriptors";
 
 export class RequestServiceDescriptorsEvent implements EventInterface<void> {
-  public readonly name: string = requestServiceDescriptorsEventName;
-  public readonly payload: undefined;
+  public readonly eventName: string = requestServiceDescriptorsEventName;
+  public readonly eventPayload: undefined;
 }

@@ -1,49 +1,50 @@
 // eslint-disable-next-line
 import "./register";
 
-import { getEnvironment } from "@app/Env";
-import { ServiceRuntime } from "@app/ServiceRuntime";
+import { Configuration } from "@app/Configuration";
+import { ConfigurationInterface } from "@app/ConfigurationInterface";
 import { SignalDecoder } from "@app/SignalDecoder";
 import { SignalEncoder } from "@app/SignalEncoder";
 import { UdpComms } from "@app/UdpComms";
 import { CommandBus } from "@app/bus/CommandBus";
 import { EventBus } from "@app/bus/EventBus";
-import { testReversePayloadCommandName } from "@app/commands/TestReversePayloadCommand";
-import { TestReversePayloadCommandHandler } from "@app/commands/TestReversePayloadCommandHandler";
-import { NodeInitializedEventHandler } from "@app/events/NodeInitializedEventHandler";
-import { RequestServiceDescriptorsEventHandler } from "@app/events/RequestServiceDescriptorsEventHandler";
+import { RequestServiceDescriptorCommand } from "@app/commands/RequestServiceDescriptorCommand";
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
 import { Logger } from "@app/logger/Logger";
+import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
 
-const env = getEnvironment();
+const configuration: ConfigurationInterface = new Configuration();
 
-const logger = new Logger(env.LOG_LEVEL);
+const logger = new Logger(configuration.getLogLevel());
 
-const udpComms = new UdpComms(logger, env.BROADCAST_ADDRESS, env.PORT);
+const udpComms = new UdpComms(
+  logger,
+  configuration.getBroadcastAddress(),
+  configuration.getPort()
+);
 const encoder = new SignalEncoder();
 const decoder = new SignalDecoder();
 const commandBus = new CommandBus();
 const eventBus = new EventBus();
 const runtime = new ServiceRuntime(
+  configuration.getServiceName(),
   logger,
   udpComms,
   encoder,
   decoder,
   commandBus,
-  eventBus
-);
-
-runtime.registerCommandHandler(new TestReversePayloadCommandHandler());
-runtime.registerEventHandler(new NodeInitializedEventHandler(logger));
-runtime.registerEventHandler(
-  new RequestServiceDescriptorsEventHandler(runtime, commandBus, eventBus)
+  eventBus,
+  {
+    acknowledgeTimeout: 100,
+    executeTimeout: 100,
+  }
 );
 
 void (async () => {
   await runtime.start();
-  const result = await runtime.executeCommand(testReversePayloadCommandName, {
-    testValue: "Abcdef123!",
-  });
+  const result = await runtime.executeCommand(
+    new RequestServiceDescriptorCommand()
+  );
   logger.debug("test", JSON.stringify(result, undefined, 4));
   await runtime.publishEvent(new RequestServiceDescriptorsEvent());
 })();

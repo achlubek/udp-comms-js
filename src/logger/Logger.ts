@@ -1,20 +1,10 @@
-import { LoggerInterface } from "@app/logger/LoggerInterface";
+import { LogLevel, LoggerInterface } from "@app/logger/LoggerInterface";
 import { prettyPrint } from "@app/logger/prettyPrint";
-
-export const availableLogLevels = [
-  "none",
-  "error",
-  "warn",
-  "info",
-  "debug",
-  "trace",
-] as const;
-export type Level = (typeof availableLogLevels)[number];
 
 export class Logger implements LoggerInterface {
   private effectiveLogLevels: string[];
 
-  public constructor(level: Level) {
+  public constructor(level: LogLevel) {
     this.effectiveLogLevels = Logger.getEffectiveLogLevels(level);
     this.debug(this, `Current log level: ${level}`);
   }
@@ -54,7 +44,7 @@ export class Logger implements LoggerInterface {
     console.log(line);
   }
 
-  private static getEffectiveLogLevels(logLevel: Level): string[] {
+  private static getEffectiveLogLevels(logLevel: LogLevel): string[] {
     switch (logLevel) {
       case "none":
         return [];

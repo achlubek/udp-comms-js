@@ -1,8 +1,9 @@
-import { CommandHandlerInterface } from "@app/commands/CommandHandlerInterface";
 import {
   TestReversePayload,
   testReversePayloadCommandName,
-} from "@app/commands/TestReversePayloadCommand";
+} from "@test/commands/TestReversePayloadCommand";
+
+import { CommandHandlerInterface } from "@app/runtime/CommandHandlerInterface";
 
 export interface TestReverseResult {
   testValue: string;

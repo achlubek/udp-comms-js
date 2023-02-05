@@ -39,6 +39,7 @@ export type DecodedSignal =
   | DecodedCommand
   | DecodedCommandAcknowledge
   | DecodedCommandResult;
+
 export interface SignalDecoderInterface {
   decode(data: ArrayBuffer): DecodedSignal;
 }

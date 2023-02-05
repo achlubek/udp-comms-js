@@ -1,3 +1,13 @@
+export const availableLogLevels = [
+  "none",
+  "error",
+  "warn",
+  "info",
+  "debug",
+  "trace",
+] as const;
+export type LogLevel = (typeof availableLogLevels)[number];
+
 export interface LoggerInterface {
   error<T>(source: T, message: string): void;
 

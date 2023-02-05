@@ -1,4 +1,4 @@
-import { CommandInterface } from "@app/commands/CommandInterface";
+import { CommandInterface } from "@app/runtime/CommandInterface";
 
 export interface TestReversePayload {
   testValue: string;
@@ -7,10 +7,10 @@ export const testReversePayloadCommandName = "get-machine-name";
 export class TestReversePayloadCommand
   implements CommandInterface<TestReversePayload>
 {
-  public readonly name = testReversePayloadCommandName;
-  public readonly payload: TestReversePayload;
+  public readonly commandName = testReversePayloadCommandName;
+  public readonly commandPayload: TestReversePayload;
 
   public constructor(value: string) {
-    this.payload = { testValue: value };
+    this.commandPayload = { testValue: value };
   }
 }

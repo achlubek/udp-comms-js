@@ -12,7 +12,8 @@
     "test": "mocha --config .mocharc.json",
     "test:coverage": "nyc --reporter=html yarn mocha",
     "build": "tsc -P tsconfig.json",
-    "start": "ts-node src/main.ts"
+    "start:dev": "ts-node -r dotenv/config src/main.ts",
+    "start:dist": "node dist/main.ts"
   },
   "dependencies": {
     "joi": "17.*",
@@ -28,6 +29,7 @@
     "@typescript-eslint/parser": "5.*",
     "chai": "4.*",
     "cross-env": "7.*",
+    "dotenv": "^16.0.3",
     "eslint": "8.*",
     "eslint-config-prettier": "8.*",
     "eslint-plugin-import": "2.*",

@@ -1,16 +1,19 @@
-import { EventInterface } from "@app/events/EventInterface";
+import { EventInterface } from "@app/runtime/EventInterface";
 
-export const nodeInitializedEventName = "service-descriptor";
+export const nodeInitializedEventName = "runtime/service-descriptor";
 
-export interface ServicesDescriptorEventPayload {
+export interface ServiceDescriptorEventPayload {
+  name: string;
   commandHandlers: string[];
   eventHandlers: string[];
 }
 
 export class ServiceDescriptorEvent
-  implements EventInterface<ServicesDescriptorEventPayload>
+  implements EventInterface<ServiceDescriptorEventPayload>
 {
-  public readonly name: string = nodeInitializedEventName;
+  public readonly eventName: string = nodeInitializedEventName;
 
-  public constructor(public readonly payload: ServicesDescriptorEventPayload) {}
+  public constructor(
+    public readonly eventPayload: ServiceDescriptorEventPayload
+  ) {}
 }

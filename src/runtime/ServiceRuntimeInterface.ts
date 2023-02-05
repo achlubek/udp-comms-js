@@ -1,13 +1,17 @@
-import { CommandHandlerInterface } from "@app/commands/CommandHandlerInterface";
-import { EventHandlerInterface } from "@app/events/EventHandlerInterface";
-import { EventInterface } from "@app/events/EventInterface";
+import { CommandHandlerInterface } from "@app/runtime/CommandHandlerInterface";
+import { CommandInterface } from "@app/runtime/CommandInterface";
+import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
+import { EventInterface } from "@app/runtime/EventInterface";
 
 export interface ServiceRuntimeInterface {
   start(): Promise<void>;
 
+  stop(): Promise<void>;
+
+  getName(): string;
+
   executeCommand<Payload, Returns>(
-    name: string,
-    payload: Payload
+    command: CommandInterface<Payload>
   ): Promise<Returns>;
 
   publishEvent<T>(event: EventInterface<T>): Promise<void>;

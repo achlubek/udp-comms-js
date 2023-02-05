@@ -1,12 +1,12 @@
-import { ServiceRuntimeInterface } from "@app/ServiceRuntimeInterface";
 import { CommandBusInterface } from "@app/bus/CommandBusInterface";
 import { EventBusInterface } from "@app/bus/EventBusInterface";
-import { EventHandlerInterface } from "@app/events/EventHandlerInterface";
 import {
   RequestServiceDescriptorsEvent,
   requestServiceDescriptorsEventName,
 } from "@app/events/RequestServicesDescriptorsEvent";
 import { ServiceDescriptorEvent } from "@app/events/ServiceDescriptorEvent";
+import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
+import { ServiceRuntimeInterface } from "@app/runtime/ServiceRuntimeInterface";
 
 export class RequestServiceDescriptorsEventHandler
   implements EventHandlerInterface<RequestServiceDescriptorsEvent>
@@ -24,6 +24,7 @@ export class RequestServiceDescriptorsEventHandler
   public async handle(): Promise<void> {
     await this.runtime.publishEvent(
       new ServiceDescriptorEvent({
+        name: this.runtime.getName(),
         commandHandlers: this.commandBus.getHandledCommands(),
         eventHandlers: this.eventBus.getHandledEvents(),
       })
