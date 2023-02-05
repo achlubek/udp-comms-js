@@ -8,6 +8,7 @@ import { RequestServiceDescriptorsEventHandler } from "@app/event-handlers/Reque
 import { ServiceStartedEventHandler } from "@app/event-handlers/ServiceStartedEventHandler";
 import { ServiceStoppedEventHandler } from "@app/event-handlers/ServiceStoppedEventHandler";
 import { requestServiceDescriptorsEventName } from "@app/events/RequestServicesDescriptorsEvent";
+import { ServiceDescriptorEvent } from "@app/events/ServiceDescriptorEvent";
 import {
   ServiceStartedEvent,
   serviceStartedEventName,
@@ -70,7 +71,19 @@ export class ServiceRuntime implements ServiceRuntimeInterface {
     private readonly commandBus: CommandBusInterface,
     private readonly eventBus: EventBusInterface,
     private readonly timeouts: Timeouts
-  ) {}
+  ) {
+    setInterval(() => {
+      if (this.udpComms.isListening()) {
+        void this.publishEvent(
+          new ServiceDescriptorEvent({
+            name: this.getName(),
+            commandHandlers: this.commandBus.getHandledCommands(),
+            eventHandlers: this.eventBus.getHandledEvents(),
+          })
+        );
+      }
+    }, 1000);
+  }
 
   public async start(): Promise<void> {
     if (this.udpComms.isListening()) {
@@ -122,13 +135,6 @@ export class ServiceRuntime implements ServiceRuntimeInterface {
     this.registerEventHandler(new ServiceStoppedEventHandler(this.logger));
   }
 
-  private unregisterInternalHandlers(): void {
-    this.unregisterCommandHandler(requestServiceDescriptorCommandName);
-    this.unregisterEventHandlers(requestServiceDescriptorsEventName);
-    this.unregisterEventHandlers(serviceStartedEventName);
-    this.unregisterEventHandlers(serviceStoppedEventName);
-  }
-
   public async stop(): Promise<void> {
     if (!this.udpComms.isListening()) {
       throw new NotStartedException("Not started");
@@ -139,6 +145,13 @@ export class ServiceRuntime implements ServiceRuntimeInterface {
   }
   public getName(): string {
     return this.name;
+  }
+
+  private unregisterInternalHandlers(): void {
+    this.unregisterCommandHandler(requestServiceDescriptorCommandName);
+    this.unregisterEventHandlers(requestServiceDescriptorsEventName);
+    this.unregisterEventHandlers(serviceStartedEventName);
+    this.unregisterEventHandlers(serviceStoppedEventName);
   }
 
   public async executeCommand<Payload, Returns>(
