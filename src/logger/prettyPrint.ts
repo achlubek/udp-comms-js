@@ -15,8 +15,7 @@ const getNowDateParts = (): { date: string; time: string } => {
   return { date: split[0], time: split[1] };
 };
 
-// eslint-disable-next-line
-export const prettyPrint = (source: any, message: string): string => {
+export const prettyPrint = <T>(source: T, message: string): string => {
   const casted = source as {
     constructor?: { name?: string };
     name?: string;

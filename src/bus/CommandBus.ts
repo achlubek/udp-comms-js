@@ -1,4 +1,6 @@
-type CommandHandler = (payload: unknown) => unknown;
+import { CommandBusInterface } from "@app/bus/CommandBusInterface";
+
+export type CommandHandler = (payload: unknown) => unknown;
 
 class CommandException extends Error {
   public constructor(public readonly commandName: string, message: string) {
@@ -16,8 +18,9 @@ export class CommandHandlerNotRegisteredException extends CommandException {
   }
 }
 
-export class CommandBus {
+export class CommandBus implements CommandBusInterface {
   private handlers: Record<string, CommandHandler | undefined> = {};
+
   public register(commandName: string, handler: CommandHandler): void {
     if (this.handlers[commandName]) {
       throw new CommandHandlerAlreadyRegisteredException(commandName);

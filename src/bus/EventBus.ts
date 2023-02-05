@@ -1,6 +1,8 @@
 import * as crypto from "crypto";
 
-type EventHandler = (payload: unknown) => void;
+import { EventBusInterface } from "@app/bus/EventBusInterface";
+
+export type EventHandler = (payload: unknown) => void;
 
 class Subscription {
   public constructor(
@@ -10,8 +12,9 @@ class Subscription {
   ) {}
 }
 
-export class EventBus {
+export class EventBus implements EventBusInterface {
   private subscriptions: Subscription[] = [];
+
   public subscribe(eventName: string, handler: EventHandler): string {
     const id = crypto.randomUUID();
     this.subscriptions.push(new Subscription(id, eventName, handler));

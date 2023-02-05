@@ -1,15 +1,16 @@
 import * as crypto from "crypto";
 
-import { SignalDecoder } from "@app/SignalDecoder";
-import { SignalEncoder } from "@app/SignalEncoder";
-import { UdpComms } from "@app/UdpComms";
-import { CommandBus } from "@app/bus/CommandBus";
-import { EventBus } from "@app/bus/EventBus";
+import { ServiceRuntimeInterface } from "@app/ServiceRuntimeInterface";
+import { SignalDecoderInterface } from "@app/SignalDecoderInterface";
+import { SignalEncoderInterface } from "@app/SignalEncoderInterface";
+import { UdpCommsInterface } from "@app/UdpCommsInterface";
+import { CommandBusInterface } from "@app/bus/CommandBusInterface";
+import { EventBusInterface } from "@app/bus/EventBusInterface";
 import { CommandHandlerInterface } from "@app/commands/CommandHandlerInterface";
 import { EventHandlerInterface } from "@app/events/EventHandlerInterface";
 import { EventInterface } from "@app/events/EventInterface";
 import { NodeInitializedEvent } from "@app/events/NodeInitializedEvent";
-import { Logger } from "@app/logger/Logger";
+import { LoggerInterface } from "@app/logger/LoggerInterface";
 
 // eslint-disable-next-line
 // @ts-ignore
@@ -21,7 +22,7 @@ const isPromise = (p: unknown | Promise<unknown>): boolean => {
   return typeof p === "object" && typeof pthen === "function";
 };
 
-export class Runtime {
+export class ServiceRuntime implements ServiceRuntimeInterface {
   private waitingAckPromises: Record<
     string,
     ((value: void | PromiseLike<void>) => void) | undefined
@@ -33,12 +34,12 @@ export class Runtime {
   > = {};
 
   public constructor(
-    private readonly logger: Logger,
-    private readonly udpComms: UdpComms,
-    private readonly signalEncoder: SignalEncoder,
-    private readonly signalDecoder: SignalDecoder,
-    private readonly commandBus: CommandBus,
-    private readonly eventBus: EventBus
+    private readonly logger: LoggerInterface,
+    private readonly udpComms: UdpCommsInterface,
+    private readonly signalEncoder: SignalEncoderInterface,
+    private readonly signalDecoder: SignalDecoderInterface,
+    private readonly commandBus: CommandBusInterface,
+    private readonly eventBus: EventBusInterface
   ) {}
 
   public async start(): Promise<void> {

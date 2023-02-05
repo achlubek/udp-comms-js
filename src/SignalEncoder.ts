@@ -1,7 +1,9 @@
 import * as crypto from "crypto";
 import { deflateSync } from "zlib";
 
-export class SignalEncoder {
+import { SignalEncoderInterface } from "@app/SignalEncoderInterface";
+
+export class SignalEncoder implements SignalEncoderInterface {
   public encodeEvent<T>(name: string, payload: T): ArrayBuffer {
     return this.stringifyAndDeflate({
       id: crypto.randomUUID(),

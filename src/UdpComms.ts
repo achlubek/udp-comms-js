@@ -1,6 +1,8 @@
 import * as dgram from "dgram";
 
+import { UdpCommsInterface } from "@app/UdpCommsInterface";
 import { Logger } from "@app/logger/Logger";
+import { LoggerInterface } from "@app/logger/LoggerInterface";
 
 export type OnReceive = (
   from: string,
@@ -14,7 +16,7 @@ export interface Address {
 type OnMessageHandler = (from: Address, data: ArrayBuffer) => void;
 
 function send(
-  logger: Logger,
+  logger: LoggerInterface,
   client: dgram.Socket,
   to: Address,
   data: ArrayBuffer
@@ -40,7 +42,7 @@ function send(
 }
 
 function listen(
-  logger: Logger,
+  logger: LoggerInterface,
   port: number,
   onMessage: OnMessageHandler
 ): Promise<dgram.Socket> {
@@ -70,7 +72,9 @@ function listen(
   });
 }
 
-export class UdpComms {
+export class NotConnectedException extends Error {}
+
+export class UdpComms implements UdpCommsInterface {
   private socket: dgram.Socket | null = null;
   public constructor(
     private readonly logger: Logger,
@@ -87,7 +91,7 @@ export class UdpComms {
         data
       );
     } else {
-      throw new Error("Not connected");
+      throw new NotConnectedException("Not connected");
     }
   }
 
@@ -100,7 +104,7 @@ export class UdpComms {
         data
       );
     } else {
-      throw new Error("Not connected");
+      throw new NotConnectedException("Not connected");
     }
   }
 

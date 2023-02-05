@@ -4,11 +4,12 @@ import { EventBus } from "@app/bus/EventBus";
 
 import sinon = require("sinon");
 
-const isUUID = (str: string) => {
+const isUUID = (str: string): boolean => {
   const regexExp =
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
   return regexExp.test(str);
 };
+
 describe("Event unit", () => {
   it("Subscribe", () => {
     const eventBus = new EventBus();

@@ -2,7 +2,7 @@
 import "./register";
 
 import { getEnvironment } from "@app/Env";
-import { Runtime } from "@app/Runtime";
+import { ServiceRuntime } from "@app/ServiceRuntime";
 import { SignalDecoder } from "@app/SignalDecoder";
 import { SignalEncoder } from "@app/SignalEncoder";
 import { UdpComms } from "@app/UdpComms";
@@ -24,7 +24,7 @@ const encoder = new SignalEncoder();
 const decoder = new SignalDecoder();
 const commandBus = new CommandBus();
 const eventBus = new EventBus();
-const runtime = new Runtime(
+const runtime = new ServiceRuntime(
   logger,
   udpComms,
   encoder,

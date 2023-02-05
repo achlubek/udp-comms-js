@@ -3,12 +3,12 @@ import {
   NodeInitializedEventPayload,
   nodeInitializedEventName,
 } from "@app/events/NodeInitializedEvent";
-import { Logger } from "@app/logger/Logger";
+import { LoggerInterface } from "@app/logger/LoggerInterface";
 
 export class NodeInitializedEventHandler
   implements EventHandlerInterface<NodeInitializedEventPayload>
 {
-  public constructor(private readonly logger: Logger) {}
+  public constructor(private readonly logger: LoggerInterface) {}
 
   public getHandledEventName(): string {
     return nodeInitializedEventName;

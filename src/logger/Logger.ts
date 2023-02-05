@@ -1,9 +1,6 @@
+import { LoggerInterface } from "@app/logger/LoggerInterface";
 import { prettyPrint } from "@app/logger/prettyPrint";
 
-// eslint-disable-next-line
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Source = any;
 export const availableLogLevels = [
   "none",
   "error",
@@ -14,7 +11,7 @@ export const availableLogLevels = [
 ] as const;
 export type Level = (typeof availableLogLevels)[number];
 
-export class Logger {
+export class Logger implements LoggerInterface {
   private effectiveLogLevels: string[];
 
   public constructor(level: Level) {
@@ -22,39 +19,39 @@ export class Logger {
     this.debug(this, `Current log level: ${level}`);
   }
 
-  public error(source: Source, message: string): void {
+  public error<T>(source: T, message: string): void {
     if (this.effectiveLogLevels.includes("error")) {
-      // eslint-disable-next-line no-console
-      console.log(prettyPrint(source, message));
+      this.print(prettyPrint(source, message));
     }
   }
 
-  public info(source: Source, message: string): void {
-    if (this.effectiveLogLevels.includes("log")) {
-      // eslint-disable-next-line no-console
-      console.log(prettyPrint(source, message));
-    }
-  }
-
-  public warn(source: Source, message: string): void {
+  public warn<T>(source: T, message: string): void {
     if (this.effectiveLogLevels.includes("warn")) {
-      // eslint-disable-next-line no-console
-      console.log(prettyPrint(source, message));
+      this.print(prettyPrint(source, message));
     }
   }
 
-  public debug(source: Source, message: string): void {
+  public info<T>(source: T, message: string): void {
+    if (this.effectiveLogLevels.includes("log")) {
+      this.print(prettyPrint(source, message));
+    }
+  }
+
+  public debug<T>(source: T, message: string): void {
     if (this.effectiveLogLevels.includes("debug")) {
-      // eslint-disable-next-line no-console
-      console.log(prettyPrint(source, message));
+      this.print(prettyPrint(source, message));
     }
   }
 
-  public trace(source: Source, message: string): void {
+  public trace<T>(source: T, message: string): void {
     if (this.effectiveLogLevels.includes("trace")) {
-      // eslint-disable-next-line no-console
-      console.log(prettyPrint(source, message));
+      this.print(prettyPrint(source, message));
     }
+  }
+
+  private print(line: string): void {
+    // eslint-disable-next-line no-console
+    console.log(line);
   }
 
   private static getEffectiveLogLevels(logLevel: Level): string[] {
@@ -72,6 +69,5 @@ export class Logger {
       case "trace":
         return ["error", "warn", "log", "debug", "trace"];
     }
-    return ["error", "warn", "log"];
   }
 }

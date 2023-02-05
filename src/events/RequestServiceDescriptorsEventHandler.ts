@@ -1,6 +1,6 @@
-import { Runtime } from "@app/Runtime";
-import { CommandBus } from "@app/bus/CommandBus";
-import { EventBus } from "@app/bus/EventBus";
+import { ServiceRuntimeInterface } from "@app/ServiceRuntimeInterface";
+import { CommandBusInterface } from "@app/bus/CommandBusInterface";
+import { EventBusInterface } from "@app/bus/EventBusInterface";
 import { EventHandlerInterface } from "@app/events/EventHandlerInterface";
 import {
   RequestServiceDescriptorsEvent,
@@ -12,9 +12,9 @@ export class RequestServiceDescriptorsEventHandler
   implements EventHandlerInterface<RequestServiceDescriptorsEvent>
 {
   public constructor(
-    private readonly runtime: Runtime,
-    private readonly commandBus: CommandBus,
-    private readonly eventBus: EventBus
+    private readonly runtime: ServiceRuntimeInterface,
+    private readonly commandBus: CommandBusInterface,
+    private readonly eventBus: EventBusInterface
   ) {}
 
   public getHandledEventName(): string {
