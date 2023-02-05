@@ -1,4 +1,4 @@
-import dgram from "dgram";
+import * as dgram from "dgram";
 
 import { Logger } from "@app/logger/Logger";
 
