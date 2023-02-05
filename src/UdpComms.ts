@@ -15,7 +15,7 @@ type OnMessageHandler = (from: Address, data: ArrayBuffer) => void;
 
 function send(logger: Logger, to: Address, data: ArrayBuffer): Promise<number> {
   return new Promise<number>((resolve, reject) => {
-    const client = dgram.createSocket("udp4");
+    const client = dgram.createSocket({ type: "udp4", reuseAddr: true });
     client.send(new Uint8Array(data), to.port, to.host, (err, bytes) => {
       client.close();
       if (err) {
@@ -38,11 +38,12 @@ function send(logger: Logger, to: Address, data: ArrayBuffer): Promise<number> {
 
 function listen(
   logger: Logger,
+  broadcastAddress: string,
   port: number,
   onMessage: OnMessageHandler
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const server = dgram.createSocket("udp4");
+    const server = dgram.createSocket({ type: "udp4", reuseAddr: true });
     server.on("error", (err) => {
       logger.error("UdpComms.listen", `${err.name}: ${err.message}`);
       logger.debug("UdpComms.listen", `Cause: ${JSON.stringify(err.cause)}`);
@@ -52,6 +53,7 @@ function listen(
       reject(err);
     });
     server.on("listening", () => {
+      server.setBroadcast(true);
       logger.debug("UdpComms.listen", `Listening on port ${port}`);
       resolve();
     });
@@ -62,7 +64,7 @@ function listen(
       );
       onMessage({ host: rinfo.address, port: rinfo.port }, msg);
     });
-    server.bind(port);
+    server.bind(port, broadcastAddress);
   });
 }
 
@@ -88,6 +90,7 @@ export class UdpComms {
   public async listen(onReceive: OnReceive): Promise<void> {
     await listen(
       this.logger,
+      this.broadcastAddress,
       this.port,
       (from, data) => void onReceive(from.host, data)
     );
