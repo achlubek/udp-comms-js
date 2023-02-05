@@ -13,11 +13,14 @@ export interface Address {
 }
 type OnMessageHandler = (from: Address, data: ArrayBuffer) => void;
 
-function send(logger: Logger, to: Address, data: ArrayBuffer): Promise<number> {
+function send(
+  logger: Logger,
+  client: dgram.Socket,
+  to: Address,
+  data: ArrayBuffer
+): Promise<number> {
   return new Promise<number>((resolve, reject) => {
-    const client = dgram.createSocket({ type: "udp4", reuseAddr: true });
     client.send(new Uint8Array(data), to.port, to.host, (err, bytes) => {
-      client.close();
       if (err) {
         logger.error("UdpComms.send", `${err.name}: ${err.message}`);
         logger.debug("UdpComms.send", `Cause: ${JSON.stringify(err.cause)}`);
@@ -38,11 +41,10 @@ function send(logger: Logger, to: Address, data: ArrayBuffer): Promise<number> {
 
 function listen(
   logger: Logger,
-  broadcastAddress: string,
   port: number,
   onMessage: OnMessageHandler
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+): Promise<dgram.Socket> {
+  return new Promise<dgram.Socket>((resolve, reject) => {
     const server = dgram.createSocket({ type: "udp4", reuseAddr: true });
     server.on("error", (err) => {
       logger.error("UdpComms.listen", `${err.name}: ${err.message}`);
@@ -55,7 +57,7 @@ function listen(
     server.on("listening", () => {
       server.setBroadcast(true);
       logger.debug("UdpComms.listen", `Listening on port ${port}`);
-      resolve();
+      resolve(server);
     });
     server.on("message", (msg, rinfo) => {
       logger.debug(
@@ -64,11 +66,12 @@ function listen(
       );
       onMessage({ host: rinfo.address, port: rinfo.port }, msg);
     });
-    server.bind(port, broadcastAddress);
+    server.bind(port);
   });
 }
 
 export class UdpComms {
+  private socket: dgram.Socket | null = null;
   public constructor(
     private readonly logger: Logger,
     private readonly broadcastAddress: string,
@@ -76,21 +79,34 @@ export class UdpComms {
   ) {}
 
   public async send(remoteAddress: string, data: ArrayBuffer): Promise<void> {
-    await send(this.logger, { host: remoteAddress, port: this.port }, data);
+    if (this.socket) {
+      await send(
+        this.logger,
+        this.socket,
+        { host: remoteAddress, port: this.port },
+        data
+      );
+    } else {
+      throw new Error("Not connected");
+    }
   }
 
   public async broadcast(data: ArrayBuffer): Promise<void> {
-    await send(
-      this.logger,
-      { host: this.broadcastAddress, port: this.port },
-      data
-    );
+    if (this.socket) {
+      await send(
+        this.logger,
+        this.socket,
+        { host: this.broadcastAddress, port: this.port },
+        data
+      );
+    } else {
+      throw new Error("Not connected");
+    }
   }
 
   public async listen(onReceive: OnReceive): Promise<void> {
-    await listen(
+    this.socket = await listen(
       this.logger,
-      this.broadcastAddress,
       this.port,
       (from, data) => void onReceive(from.host, data)
     );
