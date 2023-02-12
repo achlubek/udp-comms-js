@@ -1,2 +1,2 @@
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class RequestServiceDescriptorsEvent {}
+export class GetServiceDescriptorQuery {}

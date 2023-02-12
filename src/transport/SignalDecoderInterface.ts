@@ -31,6 +31,26 @@ export interface DecodedCommandResult {
   dateType: "command-result";
   id: string;
   commandId: string;
+  success: boolean;
+}
+
+export interface DecodedQuery {
+  dateType: "query";
+  id: string;
+  name: string;
+  payload: JSONObject;
+}
+
+export interface DecodedQueryAcknowledge {
+  dateType: "query-acknowledge";
+  queryId: string;
+  commandId: string;
+}
+
+export interface DecodedQueryResult {
+  dateType: "query-result";
+  id: string;
+  queryId: string;
   payload: JSONObject;
 }
 
@@ -38,7 +58,10 @@ export type DecodedSignal =
   | DecodedEvent
   | DecodedCommand
   | DecodedCommandAcknowledge
-  | DecodedCommandResult;
+  | DecodedCommandResult
+  | DecodedQuery
+  | DecodedQueryAcknowledge
+  | DecodedQueryResult;
 
 export interface SignalDecoderInterface {
   decode(data: ArrayBuffer): DecodedSignal;

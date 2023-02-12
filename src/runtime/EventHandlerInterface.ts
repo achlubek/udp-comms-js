@@ -1,4 +1,3 @@
-export interface EventHandlerInterface<Payload> {
-  getHandledEventName(): string;
-  handle(payload: Payload): void;
+export interface EventHandlerInterface<Event> {
+  handle(event: Event): void;
 }

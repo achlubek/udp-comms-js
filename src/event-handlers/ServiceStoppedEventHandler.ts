@@ -1,23 +1,13 @@
-import {
-  ServiceStoppedEventPayload,
-  serviceStoppedEventName,
-} from "@app/events/ServiceStoppedEvent";
+import { ServiceStoppedEvent } from "@app/events/ServiceStoppedEvent";
 import { LoggerInterface } from "@app/logger/LoggerInterface";
-import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
 
-export class ServiceStoppedEventHandler
-  implements EventHandlerInterface<ServiceStoppedEventPayload>
-{
+export class ServiceStoppedEventHandler {
   public constructor(private readonly logger: LoggerInterface) {}
 
-  public getHandledEventName(): string {
-    return serviceStoppedEventName;
-  }
-
-  public handle(payload: ServiceStoppedEventPayload): void {
+  public handle(event: ServiceStoppedEvent): void {
     this.logger.info(
       this,
-      `New service started: ${payload.name} at hostname ${payload.hostname}`
+      `New service started: ${event.name} at hostname ${event.hostname}`
     );
   }
 }

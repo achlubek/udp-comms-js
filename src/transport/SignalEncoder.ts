@@ -30,11 +30,37 @@ export class SignalEncoder implements SignalEncoderInterface {
     });
   }
 
-  public encodeCommandResult<T>(commandId: string, payload: T): ArrayBuffer {
+  public encodeCommandResult(commandId: string, success: boolean): ArrayBuffer {
     return this.stringifyAndDeflate({
       id: crypto.randomUUID(),
       dateType: "command-result",
       commandId,
+      success,
+    });
+  }
+
+  public encodeQuery<T>(id: string, name: string, payload: T): ArrayBuffer {
+    return this.stringifyAndDeflate({
+      id,
+      dateType: "query",
+      name,
+      payload,
+    });
+  }
+
+  public encodeQueryAcknowledge(queryId: string): ArrayBuffer {
+    return this.stringifyAndDeflate({
+      id: crypto.randomUUID(),
+      dateType: "query-acknowledge",
+      queryId,
+    });
+  }
+
+  public encodeQueryResult<T>(queryId: string, payload: T): ArrayBuffer {
+    return this.stringifyAndDeflate({
+      id: crypto.randomUUID(),
+      dateType: "query-result",
+      queryId,
       payload,
     });
   }

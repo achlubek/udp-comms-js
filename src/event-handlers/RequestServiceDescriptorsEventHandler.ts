@@ -1,33 +1,28 @@
-import { CommandBusInterface } from "@app/bus/CommandBusInterface";
-import { EventBusInterface } from "@app/bus/EventBusInterface";
-import {
-  RequestServiceDescriptorsEvent,
-  requestServiceDescriptorsEventName,
-} from "@app/events/RequestServicesDescriptorsEvent";
+import { CommandBus, EventBus, QueryBus } from "cqe-js";
+
+import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
 import { ServiceDescriptorEvent } from "@app/events/ServiceDescriptorEvent";
 import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
-import { ServiceRuntimeInterface } from "@app/runtime/ServiceRuntimeInterface";
+import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
 
 export class RequestServiceDescriptorsEventHandler
   implements EventHandlerInterface<RequestServiceDescriptorsEvent>
 {
   public constructor(
-    private readonly runtime: ServiceRuntimeInterface,
-    private readonly commandBus: CommandBusInterface,
-    private readonly eventBus: EventBusInterface
+    private readonly runtime: ServiceRuntime,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+    private readonly eventBus: EventBus
   ) {}
-
-  public getHandledEventName(): string {
-    return requestServiceDescriptorsEventName;
-  }
 
   public async handle(): Promise<void> {
     await this.runtime.publishEvent(
-      new ServiceDescriptorEvent({
-        name: this.runtime.getName(),
-        commandHandlers: this.commandBus.getHandledCommands(),
-        eventHandlers: this.eventBus.getHandledEvents(),
-      })
+      new ServiceDescriptorEvent(
+        this.runtime.getName(),
+        this.commandBus.getHandledCommands(),
+        this.queryBus.getHandledQueries(),
+        this.eventBus.getHandledEvents()
+      )
     );
   }
 }

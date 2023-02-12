@@ -1,4 +1,3 @@
-export interface CommandHandlerInterface<Payload, Results> {
-  getHandledCommandName(): string;
-  handle(payload: Payload): Results;
+export interface CommandHandlerInterface<Command> {
+  handle(command: Command): void;
 }

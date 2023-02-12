@@ -1,8 +1,5 @@
-// eslint-disable-next-line
-import "./util/ts-paths-register";
+import { CommandBus, EventBus, QueryBus } from "cqe-js";
 
-import { CommandBus } from "@app/bus/CommandBus";
-import { EventBus } from "@app/bus/EventBus";
 import { Configuration } from "@app/configuration/Configuration";
 import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
@@ -25,6 +22,7 @@ const encoder = new SignalEncoder();
 const decoder = new SignalDecoder();
 const commandBus = new CommandBus();
 const eventBus = new EventBus();
+const queryBus = new QueryBus();
 const runtime = new ServiceRuntime(
   configuration.getServiceName(),
   logger,
@@ -33,6 +31,7 @@ const runtime = new ServiceRuntime(
   decoder,
   commandBus,
   eventBus,
+  queryBus,
   {
     acknowledgeTimeout: 100,
     executeTimeout: 100,

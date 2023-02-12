@@ -928,6 +928,11 @@ convert-source-map@^1.7.0:
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
   integrity sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==
 
+cqe-js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cqe-js/-/cqe-js-1.0.1.tgz#e0605156f4804364fffd182208d2b90138484907"
+  integrity sha512-8tV1S8vuUatPJ85jxi2s9JmwAdXdTZAqVPdeRRpVov3Xcq5Y8edKrEPpLSeQ/J9tyhjWw70wgAcnis8HSvjB2Q==
+
 create-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
