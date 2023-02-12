@@ -1,3 +1,4 @@
+import { AeroDI } from "aero-di";
 import { CommandBus, EventBus, QueryBus } from "cqe-js";
 import * as crypto from "crypto";
 
@@ -33,27 +34,6 @@ import { UdpCommsInterface } from "@app/transport/UdpCommsInterface";
 type Any = any;
 export type Constructor<T> = new (...args: Any[]) => T;
 
-// danger
-// const castToClass = <T extends object>(
-//   classConstructor: Constructor<T>,
-//   obj: object
-// ): T => {
-//   Object.defineProperty(obj.constructor, "name", {
-//     value: classConstructor.name,
-//     writable: false,
-//   });
-//   return obj as T;
-// };
-
-// even more danger
-const castToClassName = (className: string, obj: object): object => {
-  Object.defineProperty(obj.constructor, "name", {
-    value: className,
-    writable: false,
-  });
-  return obj;
-};
-
 export interface Timeouts {
   acknowledgeTimeout: number;
   executeTimeout: number;
@@ -74,6 +54,7 @@ export class ServiceRuntime {
   > = {};
 
   public constructor(
+    private readonly di: AeroDI,
     private readonly configurationInterface: ConfigurationInterface,
     private readonly logger: LoggerInterface,
     private readonly udpComms: UdpCommsInterface,
@@ -380,8 +361,11 @@ export class ServiceRuntime {
     decoded: DecodedEvent
   ): Promise<void> {
     this.logger.debug(this, `Received event ${decoded.name}`);
-    const recreatedEvent = castToClassName(decoded.name, decoded.payload);
-    await this.eventBus.publish(recreatedEvent);
+    const metadata = this.di.getClassNameMetadata(decoded.name);
+    if (!metadata) {
+      throw new Error(`Metadata for class ${decoded.name} for found`);
+    }
+    await this.eventBus.publish(new (await metadata.ctor)(decoded.payload));
   }
 
   private async onReceiveDecodedCommandSignal(
@@ -394,8 +378,11 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeCommandAcknowledge(id)
     );
-    const recreatedCommand = castToClassName(decoded.name, decoded.payload);
-    await this.commandBus.execute(recreatedCommand);
+    const metadata = this.di.getClassNameMetadata(decoded.name);
+    if (!metadata) {
+      throw new Error(`Metadata for class ${decoded.name} for found`);
+    }
+    await this.commandBus.execute(new (await metadata.ctor)(decoded.payload));
     await this.udpComms.send(
       from,
       this.signalEncoder.encodeCommandResult(id, true)
@@ -448,8 +435,13 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeQueryAcknowledge(id)
     );
-    const recreatedQuery = castToClassName(decoded.name, decoded.payload);
-    const result = await this.queryBus.execute(recreatedQuery);
+    const metadata = this.di.getClassNameMetadata(decoded.name);
+    if (!metadata) {
+      throw new Error(`Metadata for class ${decoded.name} for found`);
+    }
+    const result = await this.queryBus.execute(
+      new (await metadata.ctor)(decoded.payload)
+    );
     await this.udpComms.send(
       from,
       this.signalEncoder.encodeQueryResult(id, result)

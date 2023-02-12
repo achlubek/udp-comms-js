@@ -295,6 +295,7 @@ export const classesReflection: ClassData[] = [
     implementsInterfaces: [],
     extendsClass: null,
     constructorParameters: [
+      { name: "di", type: "AeroDI" },
       { name: "configurationInterface", type: "ConfigurationInterface" },
       { name: "logger", type: "LoggerInterface" },
       { name: "udpComms", type: "UdpCommsInterface" },
