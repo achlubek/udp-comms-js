@@ -18,7 +18,7 @@
     "start:dist": "node dist/main.ts"
   },
   "dependencies": {
-    "aero-di": "^1.0.7",
+    "aero-di": "^1.0.9",
     "cqe-js": "^1.0.1",
     "joi": "17.*",
     "tsconfig-paths": "4.*"

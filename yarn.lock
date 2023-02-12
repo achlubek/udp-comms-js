@@ -606,10 +606,10 @@ acorn@^8.4.1, acorn@^8.8.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.2.tgz#1b2f25db02af965399b9776b0c2c391276d37c4a"
   integrity sha512-xjIYgE8HBrkpd/sJqOGNspf8uHG+NOHGOw6a/Urj8taM2EXfdNAH2oFcPeIFfsv3+kz/mJrS5VuMqbNLjCa2vw==
 
-aero-di@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/aero-di/-/aero-di-1.0.7.tgz#41410d07200d221fcec15743686a0b96549d3c5e"
-  integrity sha512-bTI7MHOWT5BwW8DYo0HmrkwbCE2EjSQKfqOX0K9isakUAN5EGEFt71JE4K7u4DrQzd+KjroBOdLhlEt81VJVUg==
+aero-di@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/aero-di/-/aero-di-1.0.9.tgz#e0e89a06623b1e16044a569883de832f7ab69cb5"
+  integrity sha512-HOa0+xszx7LeaQeow44QTErtoqNrxEAdh4oFu9JD8X3x4u6v5ooheXZVN7AJwKy6CK057OLMs3z7HP0A9Asj3w==
   dependencies:
     fast-scan-dir-recursive "^0.0.4"
     minimatch "^6.1.8"

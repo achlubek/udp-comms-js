@@ -15,13 +15,13 @@ di.registerInstance(commandBus);
 di.registerInstance(eventBus);
 di.registerInstance(queryBus);
 
-di.registerScopedConstantValue(ServiceRuntime.name, "timeouts", {
+di.registerValueForClassAndParameterName(ServiceRuntime, "timeouts", {
   acknowledgeTimeout: 100,
   executeTimeout: 100,
 });
 
 void (async () => {
-  const runtime = await di.autowireClass(ServiceRuntime);
+  const runtime = await di.getByClass(ServiceRuntime);
   await runtime.start();
   // const result = await runtime.executeCommand(
   //   new RequestServiceDescriptorCommand()

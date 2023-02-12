@@ -10,10 +10,11 @@ type Constructor = new (...args: any[]) => any;
 export interface ClassData {
   fqcn: string;
   name: string;
-  ctor: Promise<Constructor>;
+  ctor: Promise<Constructor> | null;
   implementsInterfaces: string[];
   extendsClass: string | null;
   constructorParameters: ParameterData[];
+  constructorVisibility: "public" | "protected" | "private";
 }
 export const classesReflection: ClassData[] = [
   {
@@ -28,6 +29,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["EventHandlerInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
       { name: "runtime", type: "ServiceRuntime" },
       { name: "commandBus", type: "CommandBus" },
@@ -47,6 +49,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
   },
   {
@@ -61,6 +64,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
   },
   {
@@ -75,6 +79,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: "Error",
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -89,6 +94,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["ConfigurationInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -103,6 +109,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -117,8 +124,9 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
-      { name: "name", type: "public readonly" },
+      { name: "name", type: "string" },
       { name: "commandHandlers", type: "string[]" },
       { name: "queryHandlers", type: "string[]" },
       { name: "eventHandlers", type: "string[]" },
@@ -136,6 +144,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [{ name: "name", type: "string" }],
   },
   {
@@ -150,6 +159,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [{ name: "name", type: "string" }],
   },
   {
@@ -161,6 +171,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["LoggerInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
       { name: "configurationInterface", type: "ConfigurationInterface" },
     ],
@@ -177,6 +188,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -191,6 +203,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["QueryHandlerInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
       { name: "runtime", type: "ServiceRuntime" },
       { name: "commandBus", type: "CommandBus" },
@@ -210,6 +223,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["SignalDecoderInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -224,6 +238,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["SignalEncoderInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -238,6 +253,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: "Error",
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -249,6 +265,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: ["UdpCommsInterface"],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
       { name: "logger", type: "Logger" },
       { name: "configurationInterface", type: "ConfigurationInterface" },
@@ -266,6 +283,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: "Error",
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -280,6 +298,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: "Error",
+    constructorVisibility: "public",
     constructorParameters: [],
   },
   {
@@ -294,6 +313,7 @@ export const classesReflection: ClassData[] = [
     ),
     implementsInterfaces: [],
     extendsClass: null,
+    constructorVisibility: "public",
     constructorParameters: [
       { name: "di", type: "AeroDI" },
       { name: "configurationInterface", type: "ConfigurationInterface" },

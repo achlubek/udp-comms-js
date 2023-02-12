@@ -361,11 +361,15 @@ export class ServiceRuntime {
     decoded: DecodedEvent
   ): Promise<void> {
     this.logger.debug(this, `Received event ${decoded.name}`);
-    const metadata = this.di.getClassNameMetadata(decoded.name);
+    const metadata = this.di.getMetadataByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
-    await this.eventBus.publish(new (await metadata.ctor)(decoded.payload));
+    const ctorFn = await metadata.ctor;
+    if (!ctorFn) {
+      throw new Error(`Constructor for class ${decoded.name} for found`);
+    }
+    await this.eventBus.publish(new ctorFn(decoded.payload));
   }
 
   private async onReceiveDecodedCommandSignal(
@@ -378,11 +382,15 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeCommandAcknowledge(id)
     );
-    const metadata = this.di.getClassNameMetadata(decoded.name);
+    const metadata = this.di.getMetadataByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
-    await this.commandBus.execute(new (await metadata.ctor)(decoded.payload));
+    const ctorFn = await metadata.ctor;
+    if (!ctorFn) {
+      throw new Error(`Constructor for class ${decoded.name} for found`);
+    }
+    await this.commandBus.execute(new ctorFn(decoded.payload));
     await this.udpComms.send(
       from,
       this.signalEncoder.encodeCommandResult(id, true)
@@ -435,13 +443,15 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeQueryAcknowledge(id)
     );
-    const metadata = this.di.getClassNameMetadata(decoded.name);
+    const metadata = this.di.getMetadataByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
-    const result = await this.queryBus.execute(
-      new (await metadata.ctor)(decoded.payload)
-    );
+    const ctorFn = await metadata.ctor;
+    if (!ctorFn) {
+      throw new Error(`Constructor for class ${decoded.name} for found`);
+    }
+    const result = await this.queryBus.execute(new ctorFn(decoded.payload));
     await this.udpComms.send(
       from,
       this.signalEncoder.encodeQueryResult(id, result)
