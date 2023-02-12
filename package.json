@@ -1,5 +1,6 @@
 {
   "name": "udp-comms-foundational",
+  "author": "Adrian Chlubek",
   "version": "1.0.0",
   "main": "dist/main.js",
   "license": "MIT",
@@ -11,11 +12,13 @@
     "style:fix": "yarn prettier:fix && yarn lint:fix",
     "test": "mocha --config .mocharc.json",
     "test:coverage": "nyc --reporter=html yarn mocha",
-    "build": "yarn rimraf dist && tsc -P tsconfig.build.json",
-    "start:dev": "ts-node -r dotenv/config src/main.ts",
+    "generate-reflection": "yarn aero-di-generate --baseDir=src --outFile=reflection.ts --includeGlob=\"**/*.ts\" --excludeGlob=\"**/*.spec.ts\"",
+    "build": "yarn generate-reflection && yarn rimraf dist && tsc -P tsconfig.build.json && resolve-tspaths --project tsconfig.build.json",
+    "start:dev": "ts-node -r dotenv/config -r tsconfig-paths/register src/main.ts",
     "start:dist": "node dist/main.ts"
   },
   "dependencies": {
+    "aero-di": "^1.0.7",
     "cqe-js": "^1.0.1",
     "joi": "17.*",
     "tsconfig-paths": "4.*"
@@ -38,6 +41,7 @@
     "mocha": "10.*",
     "nyc": "15.*",
     "prettier": "2.*",
+    "resolve-tspaths": "0.*",
     "rimraf": "^4.1.2",
     "sinon": "15.*",
     "ts-node": "10.*",

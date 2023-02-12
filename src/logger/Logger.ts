@@ -1,12 +1,18 @@
+import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { LogLevel, LoggerInterface } from "@app/logger/LoggerInterface";
 import { prettyPrint } from "@app/logger/prettyPrint";
 
 export class Logger implements LoggerInterface {
   private effectiveLogLevels: string[];
 
-  public constructor(level: LogLevel) {
-    this.effectiveLogLevels = Logger.getEffectiveLogLevels(level);
-    this.debug(this, `Current log level: ${level}`);
+  public constructor(configurationInterface: ConfigurationInterface) {
+    this.effectiveLogLevels = Logger.getEffectiveLogLevels(
+      configurationInterface.getLogLevel()
+    );
+    this.debug(
+      this,
+      `Current log level: ${configurationInterface.getLogLevel()}`
+    );
   }
 
   public error<T>(source: T, message: string): void {

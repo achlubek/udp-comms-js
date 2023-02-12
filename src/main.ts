@@ -1,44 +1,27 @@
+import { AeroDI } from "aero-di";
 import { CommandBus, EventBus, QueryBus } from "cqe-js";
 
-import { Configuration } from "@app/configuration/Configuration";
-import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
-import { Logger } from "@app/logger/Logger";
+import { classesReflection } from "@app/reflection";
 import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
-import { SignalDecoder } from "@app/transport/SignalDecoder";
-import { SignalEncoder } from "@app/transport/SignalEncoder";
-import { UdpComms } from "@app/transport/UdpComms";
 
-const configuration: ConfigurationInterface = new Configuration();
-
-const logger = new Logger(configuration.getLogLevel());
-
-const udpComms = new UdpComms(
-  logger,
-  configuration.getBroadcastAddress(),
-  configuration.getPort()
-);
-const encoder = new SignalEncoder();
-const decoder = new SignalDecoder();
 const commandBus = new CommandBus();
 const eventBus = new EventBus();
 const queryBus = new QueryBus();
-const runtime = new ServiceRuntime(
-  configuration.getServiceName(),
-  logger,
-  udpComms,
-  encoder,
-  decoder,
-  commandBus,
-  eventBus,
-  queryBus,
-  {
-    acknowledgeTimeout: 100,
-    executeTimeout: 100,
-  }
-);
+
+const di = new AeroDI(classesReflection);
+
+di.registerInstance(commandBus);
+di.registerInstance(eventBus);
+di.registerInstance(queryBus);
+
+di.registerScopedConstantValue(ServiceRuntime.name, "timeouts", {
+  acknowledgeTimeout: 100,
+  executeTimeout: 100,
+});
 
 void (async () => {
+  const runtime = await di.autowireClass(ServiceRuntime);
   await runtime.start();
   // const result = await runtime.executeCommand(
   //   new RequestServiceDescriptorCommand()

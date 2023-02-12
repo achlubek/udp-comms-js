@@ -1,5 +1,6 @@
 import * as dgram from "dgram";
 
+import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { Logger } from "@app/logger/Logger";
 import { LoggerInterface } from "@app/logger/LoggerInterface";
 import { UdpCommsInterface } from "@app/transport/UdpCommsInterface";
@@ -78,8 +79,7 @@ export class UdpComms implements UdpCommsInterface {
   private socket: dgram.Socket | null = null;
   public constructor(
     private readonly logger: Logger,
-    private readonly broadcastAddress: string,
-    private readonly port: number
+    private readonly configurationInterface: ConfigurationInterface
   ) {}
 
   public async send(remoteAddress: string, data: ArrayBuffer): Promise<void> {
@@ -87,7 +87,7 @@ export class UdpComms implements UdpCommsInterface {
       await send(
         this.logger,
         this.socket,
-        { host: remoteAddress, port: this.port },
+        { host: remoteAddress, port: this.configurationInterface.getPort() },
         data
       );
     } else {
@@ -100,7 +100,10 @@ export class UdpComms implements UdpCommsInterface {
       await send(
         this.logger,
         this.socket,
-        { host: this.broadcastAddress, port: this.port },
+        {
+          host: this.configurationInterface.getBroadcastAddress(),
+          port: this.configurationInterface.getPort(),
+        },
         data
       );
     } else {
@@ -111,7 +114,7 @@ export class UdpComms implements UdpCommsInterface {
   public async listen(onReceive: OnReceive): Promise<void> {
     this.socket = await listen(
       this.logger,
-      this.port,
+      this.configurationInterface.getPort(),
       (from, data) => void onReceive(from.host, data)
     );
   }

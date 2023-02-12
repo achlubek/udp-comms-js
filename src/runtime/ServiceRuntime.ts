@@ -1,6 +1,7 @@
 import { CommandBus, EventBus, QueryBus } from "cqe-js";
 import * as crypto from "crypto";
 
+import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
 import { RequestServiceDescriptorsEventHandler } from "@app/event-handlers/RequestServiceDescriptorsEventHandler";
 import { ServiceStartedEventHandler } from "@app/event-handlers/ServiceStartedEventHandler";
 import { ServiceStoppedEventHandler } from "@app/event-handlers/ServiceStoppedEventHandler";
@@ -53,20 +54,6 @@ const castToClassName = (className: string, obj: object): object => {
   return obj;
 };
 
-// even more MORE danger
-const createNamedEmptyFunction = <T extends object>(
-  name: string
-): new () => T => {
-  const fn = (() => {
-    /**/
-  }) as () => T;
-  Object.defineProperty(fn, "name", {
-    value: name,
-    writable: false,
-  });
-  return fn as unknown as new () => T;
-};
-
 export interface Timeouts {
   acknowledgeTimeout: number;
   executeTimeout: number;
@@ -87,7 +74,7 @@ export class ServiceRuntime {
   > = {};
 
   public constructor(
-    private readonly name: string,
+    private readonly configurationInterface: ConfigurationInterface,
     private readonly logger: LoggerInterface,
     private readonly udpComms: UdpCommsInterface,
     private readonly signalEncoder: SignalEncoderInterface,
@@ -151,7 +138,9 @@ export class ServiceRuntime {
         this.onReceiveDecodedQueryResultSignal(decoded);
       }
     });
-    await this.publishEvent(new ServiceStartedEvent(this.name));
+    await this.publishEvent(
+      new ServiceStartedEvent(this.configurationInterface.getServiceName())
+    );
   }
 
   private registerInternalHandlers(): void {
@@ -188,11 +177,13 @@ export class ServiceRuntime {
       throw new NotStartedException("Not started");
     }
     this.unregisterInternalHandlers();
-    await this.publishEvent(new ServiceStoppedEvent(this.name));
+    await this.publishEvent(
+      new ServiceStoppedEvent(this.configurationInterface.getServiceName())
+    );
     await this.udpComms.close();
   }
   public getName(): string {
-    return this.name;
+    return this.configurationInterface.getServiceName();
   }
 
   private unregisterInternalHandlers(): void {
@@ -332,7 +323,7 @@ export class ServiceRuntime {
     handler: CommandHandlerInterface<T>
   ): void {
     this.commandBus.register(command, handler.handle.bind(handler));
-    this.logger.info("main", `Registered handler for command ${command.name}`);
+    this.logger.info(this, `Registered handler for command ${command.name}`);
   }
 
   public unregisterCommandHandler<T extends object>(
@@ -350,12 +341,12 @@ export class ServiceRuntime {
     handler: CommandHandlerInterface<T>
   ): void {
     this.queryBus.register(query, handler.handle.bind(handler));
-    this.logger.info("main", `Registered handler for query ${query.name}`);
+    this.logger.info(this, `Registered handler for query ${query.name}`);
   }
 
   public unregisterQueryHandler<T extends object>(query: Constructor<T>): void {
     this.queryBus.unregister(query);
-    this.logger.info("main", `Unregistered handler for query ${query.name}`);
+    this.logger.info(this, `Unregistered handler for query ${query.name}`);
   }
 
   public registerEventHandler<T extends object>(
@@ -366,7 +357,7 @@ export class ServiceRuntime {
       event,
       handler.handle.bind(handler)
     );
-    this.logger.info("main", `Registered handler for event ${event.name}`);
+    this.logger.info(this, `Registered handler for event ${event.name}`);
     return subscriptionId;
   }
 
@@ -374,7 +365,7 @@ export class ServiceRuntime {
     event: Constructor<T>
   ): void {
     this.eventBus.unsubscribeByEventClass(event);
-    this.logger.info("main", `Unregistered handlers for event ${event.name}`);
+    this.logger.info(this, `Unregistered handlers for event ${event.name}`);
   }
 
   public unregisterEventHandler(subscriptionId: string): void {
@@ -389,29 +380,26 @@ export class ServiceRuntime {
     decoded: DecodedEvent
   ): Promise<void> {
     this.logger.debug(this, `Received event ${decoded.name}`);
-    await this.eventBus.publish(castToClassName(decoded.name, decoded.payload));
+    const recreatedEvent = castToClassName(decoded.name, decoded.payload);
+    await this.eventBus.publish(recreatedEvent);
   }
 
   private async onReceiveDecodedCommandSignal(
     from: string,
     decoded: DecodedCommand
   ): Promise<void> {
-    const cast = castToClassName(decoded.name, decoded.payload);
-    if (this.commandBus.hasHandler(createNamedEmptyFunction(decoded.name))) {
-      const id = decoded.id;
-      this.logger.debug(this, `Received command ${decoded.name} with id ${id}`);
-      await this.udpComms.send(
-        from,
-        this.signalEncoder.encodeCommandAcknowledge(id)
-      );
-      await this.commandBus.execute(cast);
-      await this.udpComms.send(
-        from,
-        this.signalEncoder.encodeCommandResult(id, true)
-      );
-    } else {
-      this.logger.error(this, `No handler for command ${decoded.name}`);
-    }
+    const id = decoded.id;
+    this.logger.debug(this, `Received command ${decoded.name} with id ${id}`);
+    await this.udpComms.send(
+      from,
+      this.signalEncoder.encodeCommandAcknowledge(id)
+    );
+    const recreatedCommand = castToClassName(decoded.name, decoded.payload);
+    await this.commandBus.execute(recreatedCommand);
+    await this.udpComms.send(
+      from,
+      this.signalEncoder.encodeCommandResult(id, true)
+    );
   }
 
   private onReceiveDecodedCommandAcknowledgeSignal(
@@ -454,22 +442,18 @@ export class ServiceRuntime {
     from: string,
     decoded: DecodedQuery
   ): Promise<void> {
-    const cast = castToClassName(decoded.name, decoded.payload);
-    if (this.queryBus.hasHandler(createNamedEmptyFunction(decoded.name))) {
-      const id = decoded.id;
-      this.logger.debug(this, `Received query ${decoded.name} with id ${id}`);
-      await this.udpComms.send(
-        from,
-        this.signalEncoder.encodeQueryAcknowledge(id)
-      );
-      const result = await this.queryBus.execute(cast);
-      await this.udpComms.send(
-        from,
-        this.signalEncoder.encodeQueryResult(id, result)
-      );
-    } else {
-      this.logger.error(this, `No handler for query ${decoded.name}`);
-    }
+    const id = decoded.id;
+    this.logger.debug(this, `Received query ${decoded.name} with id ${id}`);
+    await this.udpComms.send(
+      from,
+      this.signalEncoder.encodeQueryAcknowledge(id)
+    );
+    const recreatedQuery = castToClassName(decoded.name, decoded.payload);
+    const result = await this.queryBus.execute(recreatedQuery);
+    await this.udpComms.send(
+      from,
+      this.signalEncoder.encodeQueryResult(id, result)
+    );
   }
 
   private onReceiveDecodedQueryAcknowledgeSignal(
