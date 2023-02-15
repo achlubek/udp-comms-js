@@ -1,17 +1,19 @@
-import { CommandBus, EventBus, QueryBus } from "cqe-js";
+import { CommandBus, EventBus, QueryBus } from "aero-cqe";
+import { ExtractQueryReturnType } from "aero-cqe/dist/bus/QueryBus";
 
+import {
+  GetServiceDescriptorQuery,
+  RequestServiceDescriptorQueryResult,
+} from "@app/queries/GetServiceDescriptorQuery";
 import { QueryHandlerInterface } from "@app/runtime/QueryHandlerInterface";
 import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
 
-export interface RequestServiceDescriptorQueryResult {
-  name: string;
-  commandHandlers: string[];
-  queryHandlers: string[];
-  eventHandlers: string[];
-}
-
 export class GetServiceDescriptorQueryHandler
-  implements QueryHandlerInterface<void, RequestServiceDescriptorQueryResult>
+  implements
+    QueryHandlerInterface<
+      GetServiceDescriptorQuery,
+      ExtractQueryReturnType<GetServiceDescriptorQuery>
+    >
 {
   public constructor(
     private readonly runtime: ServiceRuntime,
@@ -20,7 +22,9 @@ export class GetServiceDescriptorQueryHandler
     private readonly eventBus: EventBus
   ) {}
 
-  public handle(): RequestServiceDescriptorQueryResult {
+  public handle(
+    _: GetServiceDescriptorQuery
+  ): RequestServiceDescriptorQueryResult {
     return {
       name: this.runtime.getName(),
       commandHandlers: this.commandBus.getHandledCommands(),

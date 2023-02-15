@@ -1,8 +1,8 @@
+import { CommandBus, EventBus, QueryBus } from "aero-cqe";
 import { AeroDI } from "aero-di";
-import { CommandBus, EventBus, QueryBus } from "cqe-js";
 
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
-import { classesReflection } from "@app/reflection";
+import { classesReflection } from "@app/reflectionData";
 import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
 
 const commandBus = new CommandBus();
@@ -15,10 +15,14 @@ di.registerInstance(commandBus);
 di.registerInstance(eventBus);
 di.registerInstance(queryBus);
 
-di.registerValueForClassAndParameterName(ServiceRuntime, "timeouts", {
-  acknowledgeTimeout: 100,
-  executeTimeout: 100,
-});
+di.parameterResolver.registerValueForClassAndParameterName(
+  ServiceRuntime,
+  "timeouts",
+  {
+    acknowledgeTimeout: 100,
+    executeTimeout: 100,
+  }
+);
 
 void (async () => {
   const runtime = await di.getByClass(ServiceRuntime);

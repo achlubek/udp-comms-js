@@ -1,2 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class RequestServiceDescriptorsEvent {}
+import { AbstractBaseEvent } from "aero-cqe";
+
+export class RequestServiceDescriptorsEvent extends AbstractBaseEvent {}

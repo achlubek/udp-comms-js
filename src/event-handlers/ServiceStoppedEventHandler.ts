@@ -1,7 +1,10 @@
 import { ServiceStoppedEvent } from "@app/events/ServiceStoppedEvent";
 import { LoggerInterface } from "@app/logger/LoggerInterface";
+import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
 
-export class ServiceStoppedEventHandler {
+export class ServiceStoppedEventHandler
+  implements EventHandlerInterface<ServiceStoppedEvent>
+{
   public constructor(private readonly logger: LoggerInterface) {}
 
   public handle(event: ServiceStoppedEvent): void {

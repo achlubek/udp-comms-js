@@ -1,5 +1,12 @@
+import {
+  AbstractBaseCommand,
+  AbstractBaseEvent,
+  AbstractBaseQuery,
+  CommandBus,
+  EventBus,
+  QueryBus,
+} from "aero-cqe";
 import { AeroDI } from "aero-di";
-import { CommandBus, EventBus, QueryBus } from "cqe-js";
 import * as crypto from "crypto";
 
 import { ConfigurationInterface } from "@app/configuration/ConfigurationInterface";
@@ -15,6 +22,7 @@ import { GetServiceDescriptorQuery } from "@app/queries/GetServiceDescriptorQuer
 import { GetServiceDescriptorQueryHandler } from "@app/query-handlers/GetServiceDescriptorQueryHandler";
 import { CommandHandlerInterface } from "@app/runtime/CommandHandlerInterface";
 import { EventHandlerInterface } from "@app/runtime/EventHandlerInterface";
+import { QueryHandlerInterface } from "@app/runtime/QueryHandlerInterface";
 import {
   DecodedCommand,
   DecodedCommandAcknowledge,
@@ -168,7 +176,7 @@ export class ServiceRuntime {
   }
 
   private unregisterInternalHandlers(): void {
-    this.unregisterCommandHandler(GetServiceDescriptorQuery);
+    this.unregisterQueryHandler(GetServiceDescriptorQuery);
     this.unregisterEventHandlers(RequestServiceDescriptorsEvent);
     this.unregisterEventHandlers(ServiceStartedEvent);
     this.unregisterEventHandlers(ServiceStoppedEvent);
@@ -299,15 +307,15 @@ export class ServiceRuntime {
     );
   }
 
-  public registerCommandHandler<T extends object>(
+  public registerCommandHandler<T extends AbstractBaseCommand>(
     command: Constructor<T>,
     handler: CommandHandlerInterface<T>
   ): void {
-    this.commandBus.register(command, handler.handle.bind(handler));
+    this.commandBus.register(command, (c) => handler.handle(c));
     this.logger.info(this, `Registered handler for command ${command.name}`);
   }
 
-  public unregisterCommandHandler<T extends object>(
+  public unregisterCommandHandler<T extends AbstractBaseCommand>(
     command: Constructor<T>
   ): void {
     this.commandBus.unregister(command);
@@ -317,20 +325,22 @@ export class ServiceRuntime {
     );
   }
 
-  public registerQueryHandler<T extends object>(
+  public registerQueryHandler<T extends AbstractBaseQuery<Result>, Result>(
     query: Constructor<T>,
-    handler: CommandHandlerInterface<T>
+    handler: QueryHandlerInterface<T, Result>
   ): void {
-    this.queryBus.register(query, handler.handle.bind(handler));
+    this.queryBus.register(query, (q) => handler.handle(q));
     this.logger.info(this, `Registered handler for query ${query.name}`);
   }
 
-  public unregisterQueryHandler<T extends object>(query: Constructor<T>): void {
+  public unregisterQueryHandler<T extends AbstractBaseQuery<Result>, Result>(
+    query: Constructor<T>
+  ): void {
     this.queryBus.unregister(query);
     this.logger.info(this, `Unregistered handler for query ${query.name}`);
   }
 
-  public registerEventHandler<T extends object>(
+  public registerEventHandler<T extends AbstractBaseEvent>(
     event: Constructor<T>,
     handler: EventHandlerInterface<T>
   ): string {
@@ -342,7 +352,7 @@ export class ServiceRuntime {
     return subscriptionId;
   }
 
-  public unregisterEventHandlers<T extends object>(
+  public unregisterEventHandlers<T extends AbstractBaseEvent>(
     event: Constructor<T>
   ): void {
     this.eventBus.unsubscribeByEventClass(event);
@@ -361,7 +371,9 @@ export class ServiceRuntime {
     decoded: DecodedEvent
   ): Promise<void> {
     this.logger.debug(this, `Received event ${decoded.name}`);
-    const metadata = this.di.getMetadataByClassName(decoded.name);
+    const metadata = this.di.metadataProvider.getMetadataByClassName(
+      decoded.name
+    );
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
@@ -382,7 +394,9 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeCommandAcknowledge(id)
     );
-    const metadata = this.di.getMetadataByClassName(decoded.name);
+    const metadata = this.di.metadataProvider.getMetadataByClassName(
+      decoded.name
+    );
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
@@ -443,7 +457,9 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeQueryAcknowledge(id)
     );
-    const metadata = this.di.getMetadataByClassName(decoded.name);
+    const metadata = this.di.metadataProvider.getMetadataByClassName(
+      decoded.name
+    );
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
@@ -451,6 +467,7 @@ export class ServiceRuntime {
     if (!ctorFn) {
       throw new Error(`Constructor for class ${decoded.name} for found`);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const result = await this.queryBus.execute(new ctorFn(decoded.payload));
     await this.udpComms.send(
       from,

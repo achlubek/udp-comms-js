@@ -1,4 +1,4 @@
-import { CommandBus, EventBus, QueryBus } from "cqe-js";
+import { CommandBus, EventBus, QueryBus } from "aero-cqe";
 
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
 import { ServiceDescriptorEvent } from "@app/events/ServiceDescriptorEvent";
