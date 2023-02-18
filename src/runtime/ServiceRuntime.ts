@@ -371,9 +371,7 @@ export class ServiceRuntime {
     decoded: DecodedEvent
   ): Promise<void> {
     this.logger.debug(this, `Received event ${decoded.name}`);
-    const metadata = this.di.metadataProvider.getMetadataByClassName(
-      decoded.name
-    );
+    const metadata = this.di.metadataProvider.getByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
@@ -394,9 +392,7 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeCommandAcknowledge(id)
     );
-    const metadata = this.di.metadataProvider.getMetadataByClassName(
-      decoded.name
-    );
+    const metadata = this.di.metadataProvider.getByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }
@@ -457,9 +453,7 @@ export class ServiceRuntime {
       from,
       this.signalEncoder.encodeQueryAcknowledge(id)
     );
-    const metadata = this.di.metadataProvider.getMetadataByClassName(
-      decoded.name
-    );
+    const metadata = this.di.metadataProvider.getByClassName(decoded.name);
     if (!metadata) {
       throw new Error(`Metadata for class ${decoded.name} for found`);
     }

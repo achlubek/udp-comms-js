@@ -3,7 +3,7 @@ import { AeroDI } from "aero-di";
 
 import { RequestServiceDescriptorsEvent } from "@app/events/RequestServicesDescriptorsEvent";
 import { classesReflection } from "@app/reflectionData";
-import { ServiceRuntime } from "@app/runtime/ServiceRuntime";
+import { ServiceRuntime, Timeouts } from "@app/runtime/ServiceRuntime";
 
 const commandBus = new CommandBus();
 const eventBus = new EventBus();
@@ -15,13 +15,17 @@ di.registerInstance(commandBus);
 di.registerInstance(eventBus);
 di.registerInstance(queryBus);
 
+export class TimeoutsClass implements Timeouts {
+  public constructor(
+    public acknowledgeTimeout: number,
+    public executeTimeout: number
+  ) {}
+}
+
 di.parameterResolver.registerValueForClassAndParameterName(
   ServiceRuntime,
   "timeouts",
-  {
-    acknowledgeTimeout: 100,
-    executeTimeout: 100,
-  }
+  new TimeoutsClass(100, 100)
 );
 
 void (async () => {

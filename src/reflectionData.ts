@@ -15,8 +15,112 @@ export interface ClassData {
   extendsClass: string | null;
   constructorParameters: ParameterData[];
   constructorVisibility: "public" | "protected" | "private";
+  isAbstract: boolean;
 }
 export const classesReflection: ClassData[] = [
+  {
+    fqcn: "main/TimeoutsClass",
+    name: "TimeoutsClass",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) => void import("./main").then((imp) => r(imp.TimeoutsClass))
+    ),
+    implementsInterfaces: ["Timeouts"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [
+      { name: "acknowledgeTimeout", type: "number" },
+      { name: "executeTimeout", type: "number" },
+    ],
+    isAbstract: false,
+  },
+  {
+    fqcn: "configuration/Configuration/ConfigurationValidationFailedException",
+    name: "ConfigurationValidationFailedException",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./configuration/Configuration").then((imp) =>
+          r(imp.ConfigurationValidationFailedException)
+        )
+    ),
+    implementsInterfaces: [],
+    extendsClass: "Error",
+    constructorVisibility: "public",
+    constructorParameters: [],
+    isAbstract: false,
+  },
+  {
+    fqcn: "configuration/Configuration/Configuration",
+    name: "Configuration",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./configuration/Configuration").then((imp) =>
+          r(imp.Configuration)
+        )
+    ),
+    implementsInterfaces: ["ConfigurationInterface"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [],
+    isAbstract: false,
+  },
+  {
+    fqcn: "event-handlers/RequestServiceDescriptorsEventHandler/RequestServiceDescriptorsEventHandler",
+    name: "RequestServiceDescriptorsEventHandler",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import(
+          "./event-handlers/RequestServiceDescriptorsEventHandler"
+        ).then((imp) => r(imp.RequestServiceDescriptorsEventHandler))
+    ),
+    implementsInterfaces: [
+      "EventHandlerInterface<RequestServiceDescriptorsEvent>",
+    ],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [
+      { name: "runtime", type: "ServiceRuntime" },
+      { name: "commandBus", type: "CommandBus" },
+      { name: "queryBus", type: "QueryBus" },
+      { name: "eventBus", type: "EventBus" },
+    ],
+    isAbstract: false,
+  },
+  {
+    fqcn: "event-handlers/ServiceStartedEventHandler/ServiceStartedEventHandler",
+    name: "ServiceStartedEventHandler",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./event-handlers/ServiceStartedEventHandler").then((imp) =>
+          r(imp.ServiceStartedEventHandler)
+        )
+    ),
+    implementsInterfaces: ["EventHandlerInterface<ServiceStartedEvent>"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
+    isAbstract: false,
+  },
+  {
+    fqcn: "event-handlers/ServiceStoppedEventHandler/ServiceStoppedEventHandler",
+    name: "ServiceStoppedEventHandler",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./event-handlers/ServiceStoppedEventHandler").then((imp) =>
+          r(imp.ServiceStoppedEventHandler)
+        )
+    ),
+    implementsInterfaces: ["EventHandlerInterface<ServiceStoppedEvent>"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
+    isAbstract: false,
+  },
   {
     fqcn: "events/RequestServicesDescriptorsEvent/RequestServiceDescriptorsEvent",
     name: "RequestServiceDescriptorsEvent",
@@ -31,6 +135,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "AbstractBaseEvent",
     constructorVisibility: "public",
     constructorParameters: [],
+    isAbstract: false,
   },
   {
     fqcn: "events/ServiceDescriptorEvent/ServiceDescriptorEvent",
@@ -51,6 +156,7 @@ export const classesReflection: ClassData[] = [
       { name: "queryHandlers", type: "string[]" },
       { name: "eventHandlers", type: "string[]" },
     ],
+    isAbstract: false,
   },
   {
     fqcn: "events/ServiceStartedEvent/ServiceStartedEvent",
@@ -66,6 +172,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "AbstractBaseEvent",
     constructorVisibility: "public",
     constructorParameters: [{ name: "name", type: "string" }],
+    isAbstract: false,
   },
   {
     fqcn: "events/ServiceStoppedEvent/ServiceStoppedEvent",
@@ -81,86 +188,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "AbstractBaseEvent",
     constructorVisibility: "public",
     constructorParameters: [{ name: "name", type: "string" }],
-  },
-  {
-    fqcn: "configuration/Configuration/ConfigurationValidationFailedException",
-    name: "ConfigurationValidationFailedException",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./configuration/Configuration").then((imp) =>
-          r(imp.ConfigurationValidationFailedException)
-        )
-    ),
-    implementsInterfaces: [],
-    extendsClass: "Error",
-    constructorVisibility: "public",
-    constructorParameters: [],
-  },
-  {
-    fqcn: "configuration/Configuration/Configuration",
-    name: "Configuration",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./configuration/Configuration").then((imp) =>
-          r(imp.Configuration)
-        )
-    ),
-    implementsInterfaces: ["ConfigurationInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [],
-  },
-  {
-    fqcn: "event-handlers/RequestServiceDescriptorsEventHandler/RequestServiceDescriptorsEventHandler",
-    name: "RequestServiceDescriptorsEventHandler",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import(
-          "./event-handlers/RequestServiceDescriptorsEventHandler"
-        ).then((imp) => r(imp.RequestServiceDescriptorsEventHandler))
-    ),
-    implementsInterfaces: ["EventHandlerInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [
-      { name: "runtime", type: "ServiceRuntime" },
-      { name: "commandBus", type: "CommandBus" },
-      { name: "queryBus", type: "QueryBus" },
-      { name: "eventBus", type: "EventBus" },
-    ],
-  },
-  {
-    fqcn: "event-handlers/ServiceStartedEventHandler/ServiceStartedEventHandler",
-    name: "ServiceStartedEventHandler",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./event-handlers/ServiceStartedEventHandler").then((imp) =>
-          r(imp.ServiceStartedEventHandler)
-        )
-    ),
-    implementsInterfaces: ["EventHandlerInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
-  },
-  {
-    fqcn: "event-handlers/ServiceStoppedEventHandler/ServiceStoppedEventHandler",
-    name: "ServiceStoppedEventHandler",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./event-handlers/ServiceStoppedEventHandler").then((imp) =>
-          r(imp.ServiceStoppedEventHandler)
-        )
-    ),
-    implementsInterfaces: ["EventHandlerInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [{ name: "logger", type: "LoggerInterface" }],
+    isAbstract: false,
   },
   {
     fqcn: "logger/Logger/Logger",
@@ -175,6 +203,7 @@ export const classesReflection: ClassData[] = [
     constructorParameters: [
       { name: "configurationInterface", type: "ConfigurationInterface" },
     ],
+    isAbstract: false,
   },
   {
     fqcn: "queries/GetServiceDescriptorQuery/GetServiceDescriptorQuery",
@@ -190,6 +219,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "AbstractBaseQuery<RequestServiceDescriptorQueryResult>",
     constructorVisibility: "public",
     constructorParameters: [],
+    isAbstract: false,
   },
   {
     fqcn: "query-handlers/GetServiceDescriptorQueryHandler/GetServiceDescriptorQueryHandler",
@@ -210,6 +240,71 @@ export const classesReflection: ClassData[] = [
       { name: "queryBus", type: "QueryBus" },
       { name: "eventBus", type: "EventBus" },
     ],
+    isAbstract: false,
+  },
+  {
+    fqcn: "transport/SignalDecoder/SignalDecoder",
+    name: "SignalDecoder",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./transport/SignalDecoder").then((imp) =>
+          r(imp.SignalDecoder)
+        )
+    ),
+    implementsInterfaces: ["SignalDecoderInterface"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [],
+    isAbstract: false,
+  },
+  {
+    fqcn: "transport/SignalEncoder/SignalEncoder",
+    name: "SignalEncoder",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./transport/SignalEncoder").then((imp) =>
+          r(imp.SignalEncoder)
+        )
+    ),
+    implementsInterfaces: ["SignalEncoderInterface"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [],
+    isAbstract: false,
+  },
+  {
+    fqcn: "transport/UdpComms/NotConnectedException",
+    name: "NotConnectedException",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) =>
+        void import("./transport/UdpComms").then((imp) =>
+          r(imp.NotConnectedException)
+        )
+    ),
+    implementsInterfaces: [],
+    extendsClass: "Error",
+    constructorVisibility: "public",
+    constructorParameters: [],
+    isAbstract: false,
+  },
+  {
+    fqcn: "transport/UdpComms/UdpComms",
+    name: "UdpComms",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ctor: new Promise(
+      (r) => void import("./transport/UdpComms").then((imp) => r(imp.UdpComms))
+    ),
+    implementsInterfaces: ["UdpCommsInterface"],
+    extendsClass: null,
+    constructorVisibility: "public",
+    constructorParameters: [
+      { name: "logger", type: "Logger" },
+      { name: "configurationInterface", type: "ConfigurationInterface" },
+    ],
+    isAbstract: false,
   },
   {
     fqcn: "runtime/ServiceRuntime/NotStartedException",
@@ -225,6 +320,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "Error",
     constructorVisibility: "public",
     constructorParameters: [],
+    isAbstract: false,
   },
   {
     fqcn: "runtime/ServiceRuntime/AlreadyStartedException",
@@ -240,6 +336,7 @@ export const classesReflection: ClassData[] = [
     extendsClass: "Error",
     constructorVisibility: "public",
     constructorParameters: [],
+    isAbstract: false,
   },
   {
     fqcn: "runtime/ServiceRuntime/ServiceRuntime",
@@ -266,65 +363,6 @@ export const classesReflection: ClassData[] = [
       { name: "queryBus", type: "QueryBus" },
       { name: "timeouts", type: "Timeouts" },
     ],
-  },
-  {
-    fqcn: "transport/SignalDecoder/SignalDecoder",
-    name: "SignalDecoder",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./transport/SignalDecoder").then((imp) =>
-          r(imp.SignalDecoder)
-        )
-    ),
-    implementsInterfaces: ["SignalDecoderInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [],
-  },
-  {
-    fqcn: "transport/SignalEncoder/SignalEncoder",
-    name: "SignalEncoder",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./transport/SignalEncoder").then((imp) =>
-          r(imp.SignalEncoder)
-        )
-    ),
-    implementsInterfaces: ["SignalEncoderInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [],
-  },
-  {
-    fqcn: "transport/UdpComms/NotConnectedException",
-    name: "NotConnectedException",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) =>
-        void import("./transport/UdpComms").then((imp) =>
-          r(imp.NotConnectedException)
-        )
-    ),
-    implementsInterfaces: [],
-    extendsClass: "Error",
-    constructorVisibility: "public",
-    constructorParameters: [],
-  },
-  {
-    fqcn: "transport/UdpComms/UdpComms",
-    name: "UdpComms",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    ctor: new Promise(
-      (r) => void import("./transport/UdpComms").then((imp) => r(imp.UdpComms))
-    ),
-    implementsInterfaces: ["UdpCommsInterface"],
-    extendsClass: null,
-    constructorVisibility: "public",
-    constructorParameters: [
-      { name: "logger", type: "Logger" },
-      { name: "configurationInterface", type: "ConfigurationInterface" },
-    ],
+    isAbstract: false,
   },
 ];

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "aero-cqe": "^1.0.2",
-    "aero-di": "^1.1.1",
+    "aero-di": "^1.2.2",
     "joi": "17.*",
     "tsconfig-paths": "4.*"
   },

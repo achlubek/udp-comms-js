@@ -638,14 +638,14 @@ aero-cqe@^1.0.2:
   resolved "https://registry.yarnpkg.com/aero-cqe/-/aero-cqe-1.0.2.tgz#153fad1f10d3f7e1255fb85411586f305ccfcb15"
   integrity sha512-rZ5N6i9ukc7kOhVuowzL/WXvM+wsduBGt110Z7wTE5Mwio6EQJ/Uvx93dc97vxj+ROThvWq9fNgrFAFZmVs/1w==
 
-aero-di@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/aero-di/-/aero-di-1.1.1.tgz#8b8cca859b9902bd1a073ad88f7d91c3464f53a3"
-  integrity sha512-Q99AF+kTvHdsrPihDEJq9MD41Znc22aVhvvXqffqP/cLPRAvI2T0p/pjL5EvjkM3KgciCVwOsK8Zrrlm33dQYQ==
+aero-di@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/aero-di/-/aero-di-1.2.2.tgz#de8c94a9071ea47db3bd1ee115c40fc46dbb4eee"
+  integrity sha512-GaYj0KSq3Eb60GOW8zkxPRsAcwWNM5vx4sxvYvYML08gePSBu2SbvhEF/QLBLHr2IYzG0wKFJOQHZjIo0BbF3w==
   dependencies:
     fast-scan-dir-recursive "^0.0.4"
-    minimatch "^6.1.8"
-    prettier "2.*"
+    minimatch "^6.2.0"
+    prettier "2.8.4"
     typescript "4.*"
 
 aggregate-error@^3.0.0:
@@ -2682,10 +2682,10 @@ minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@^6.1.8:
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-6.1.8.tgz#5a0ea694ca41342e14561bbec62802b59509f7e4"
-  integrity sha512-sTvS8Q4mIZiSnMo9192lZMxfeaGCslH5CC7B62hd9DlbifUVrc02ABTeRJINPosxKnvZlrmAaNSo8f4PZqDDdw==
+minimatch@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-6.2.0.tgz#2b70fd13294178c69c04dfc05aebdb97a4e79e42"
+  integrity sha512-sauLxniAmvnhhRjFwPNnJKaPFYyddAgbYdeUpHULtCT/GhzdCx/MDNy+Y40lBxTQUrMzDE8e0S43Z5uqfO0REg==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -3067,6 +3067,11 @@ prettier@2.*:
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.3.tgz#ab697b1d3dd46fb4626fbe2f543afe0cc98d8632"
   integrity sha512-tJ/oJ4amDihPoufT5sM0Z1SKEuKay8LfVAMlbbhnnkvt6BUserZylqo2PN+p9KeljLr0OHa2rXHU1T8reeoTrw==
+
+prettier@2.8.4:
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
